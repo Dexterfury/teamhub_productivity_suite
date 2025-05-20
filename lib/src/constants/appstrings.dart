@@ -1,0 +1,160 @@
+class AppStrings {
+  // User Model Fields
+  static const String fieldUid = 'uid';
+  static const String fieldEmail = 'email';
+  static const String fieldFullName = 'fullName';
+  static const String fieldUserPhotoUrl = 'userPhotoUrl';
+  static const String fieldIsFirstLogin = 'isFirstLogin';
+  static const String fieldCreatedAt = 'createdAt';
+  static const String fieldCreatedBy = 'createdBy';
+  static const String fieldRoles = 'roles';
+  static const String fieldIsOnline = 'isOnline';
+  static const String fieldLastOnline = 'lastOnline';
+  static const String fieldSearchTokens = 'searchTokens';
+  static const String fieldAssignedOrganizationId = 'assignedOrganizationId';
+  static const String fieldJobTitle = 'jobTitle';
+
+  // User Role Fields
+  static const String fieldIsAdmin = 'isAdmin';
+  static const String fieldIsManager = 'isManager';
+  static const String fieldIsMember = 'isMember';
+  static const String fieldApproverLevel = 'approverLevel';
+
+  // Additional User Role Fields (based on errors)
+  static const String fieldCanAccessPOS = 'canAccessPOS';
+  static const String fieldCanBalanceShifts = 'canBalanceShifts';
+  static const String fieldCanAccessProcurement = 'canAccessProcurement';
+  static const String fieldCanAccessAccounting = 'canAccessAccounting';
+  static const String fieldCanManageSuppliers = 'canManageSuppliers';
+  static const String fieldCanManageItems = 'canManageItems';
+  static const String fieldCanManageEquipment = 'canManageEquipment';
+  static const String fieldCanProcessRentals = 'canProcessRentals';
+  static const String fieldCanPerformStockCount = 'canPerformStockCount';
+  static const String fieldCanManageUsers = 'canManageUsers';
+  static const String fieldCanManageOrganizations = 'canManageOrganizations';
+  static const String fieldCanManageSites = 'canManageSites';
+  static const String fieldCanGenerateInvoices = 'canGenerateInvoices';
+  static const String fieldCanManageAccountingPeriods = 'canManageAccountingPeriods';
+  static const String fieldCanOverrideRolloverConditions = 'canOverrideRolloverConditions';
+  static const String fieldCanPostToSoftClosedPeriod = 'canPostToSoftClosedPeriod';
+
+
+  // Task Model Fields
+  static const String fieldTaskId = 'taskId';
+  static const String fieldTitle = 'title';
+  static const String fieldDescription = 'description';
+  static const String fieldDueDate = 'dueDate';
+  static const String fieldStatus = 'status';
+  static const String fieldAssigneeId = 'assigneeId';
+  static const String fieldTaskProjectId = 'projectId'; // Renamed to be specific
+  static const String fieldCreatedById = 'createdById';
+  static const String fieldCreatedAtTask = 'createdAt'; // Differentiate if needed, or use a single constant
+
+  // Project Model Fields
+  static const String fieldProjectProjectId = 'projectId'; // Renamed to be specific
+  static const String fieldProjectName = 'projectName';
+  static const String fieldProjectDescription = 'projectDescription';
+  static const String fieldMemberIds = 'memberIds';
+  static const String fieldCreatedByProjectId = 'createdById'; // Differentiate if needed
+  static const String fieldCreatedAtProject = 'createdAt'; // Differentiate if needed
+
+  // Inventory Model Fields
+  static const String fieldInventoryItemId = 'inventoryItemId';
+  static const String fieldItemName = 'itemName';
+  static const String fieldItemDescription = 'itemDescription';
+  static const String fieldQuantity = 'quantity';
+  static const String fieldCategory = 'category';
+  static const String fieldSupplier = 'supplier';
+
+  // Authentication Strings
+  static const String loginTitle = 'Welcome Back!';
+  static const String loginSubtitle = 'Sign in to continue';
+  static const String emailHint = 'Email';
+  static const String passwordHint = 'Password';
+  static const String loginButton = 'Login';
+  static const String forgotPassword = 'Forgot Password?';
+  static const String noAccount = "Don't have an account?";
+  static const String signUpLink = 'Sign Up';
+
+  static const String registerTitle = 'Create Account';
+  static const String registerSubtitle = 'Get started with TeamHub';
+  static const String fullNameHint = 'Full Name';
+  static const String confirmPasswordHint = 'Confirm Password';
+  static const String signUpButton = 'Sign Up';
+  static const String alreadyAccount = 'Already have an account?';
+  static const String loginLink = 'Login';
+
+  static const String forgotPasswordTitle = 'Forgot Password';
+  static const String forgotPasswordSubtitle = 'Enter your email to reset your password';
+  static const String sendResetLinkButton = 'Send Reset Link';
+
+  // General UI Strings
+  static const String dashboardTitle = 'Dashboard';
+  static const String projectsTitle = 'Projects';
+  static const String tasksTitle = 'Tasks';
+  static const String inventoryTitle = 'Inventory';
+  static const String usersTitle = 'Users';
+  static const String profileTitle = 'Profile';
+  static const String settingsTitle = 'Settings'; // Example, not in requirements but good practice
+
+  static const String myTasksSection = 'My Tasks';
+  static const String recentProjectsSection = 'Recent Projects';
+  static const String quickStatsSection = 'Quick Stats';
+
+  static const String createProjectTitle = 'Create Project';
+  static const String editProjectTitle = 'Edit Project';
+  static const String projectNameHint = 'Project Name';
+  static const String projectDescriptionHint = 'Project Description';
+  static const String addMembersHint = 'Add Members';
+  static const String saveButton = 'Save';
+  static const String cancelButton = 'Cancel';
+
+  static const String createTaskTitle = 'Create Task';
+  static const String editTaskTitle = 'Edit Task';
+  static const String taskTitleHint = 'Task Title';
+  static const String taskDescriptionHint = 'Task Description';
+  static const String dueDateHint = 'Due Date';
+  static const String statusHint = 'Status';
+  static const String assigneeHint = 'Assignee';
+  static const String selectProjectHint = 'Select Project';
+
+  static const String addInventoryItemTitle = 'Add Inventory Item';
+  static const String editInventoryItemTitle = 'Edit Inventory Item';
+  static const String itemNameHint = 'Item Name';
+  static const String itemDescriptionHint = 'Item Description';
+  static const String quantityHint = 'Quantity';
+  static const String categoryHint = 'Category';
+  static const String supplierHint = 'Supplier (Optional)';
+
+  static const String editProfileTitle = 'Edit Profile';
+  static const String fullNameProfileHint = 'Full Name';
+  static const String jobTitleProfileHint = 'Job Title';
+  static const String changePhotoButton = 'Change Photo';
+  static const String logoutButton = 'Logout';
+
+  // Placeholder Data Strings
+  static const String placeholderProjectName = 'Sample Project';
+  static const String placeholderProjectDescription = 'This is a placeholder project description. It should be long enough to demonstrate truncation in the list view.';
+  static const String placeholderTaskTitle = 'Complete UI for Login Screen';
+  static const String placeholderTaskDescription = 'Implement the visual elements and layout for the login screen according to the design specifications.';
+  static const String placeholderItemName = 'Laptop';
+  static const String placeholderItemDescription = 'Standard issue work laptop.';
+  static const String placeholderUserName = 'John Doe';
+  static const String placeholderUserEmail = 'john.doe@example.com';
+  static const String placeholderJobTitle = 'Software Engineer';
+
+  // Error Messages (Placeholders)
+  static const String genericError = 'An unexpected error occurred.';
+  static const String networkError = 'Please check your internet connection.';
+  static const String invalidEmailError = 'Please enter a valid email address.';
+  static const String passwordTooShortError = 'Password must be at least 6 characters long.';
+  static const String passwordsDoNotMatchError = 'Passwords do not match.';
+  static const String requiredFieldError = 'This field is required.';
+}
+
+enum ApproverLevel {
+  none,
+  level1,
+  level2,
+  level3,
+}
