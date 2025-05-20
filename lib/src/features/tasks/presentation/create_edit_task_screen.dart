@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:teamhub_productivity_suite/src/utils/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 
 class CreateEditTaskScreen extends StatelessWidget {
   final String? taskId; // Null if creating, not null if editing
   final String? projectId; // Optional, for creating a task within a project
 
-  const CreateEditTaskScreen({Key? key, this.taskId, this.projectId}) : super(key: key);
+  const CreateEditTaskScreen({super.key, this.taskId, this.projectId});
 
   bool get isEditing => taskId != null;
 

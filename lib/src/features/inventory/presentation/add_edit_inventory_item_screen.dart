@@ -9,7 +9,7 @@ class AddEditInventoryItemScreen extends StatefulWidget {
   final String? itemId;
   final InventoryItemModel? item;
 
-  const AddEditInventoryItemScreen({Key? key, this.itemId, this.item}) : super(key: key);
+  const AddEditInventoryItemScreen({super.key, this.itemId, this.item});
 
   bool get isEditing => itemId != null;
 

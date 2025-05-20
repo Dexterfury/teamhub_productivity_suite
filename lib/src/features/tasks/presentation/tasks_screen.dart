@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:teamhub_productivity_suite/src/models/task_model.dart';
-import 'package:teamhub_productivity_suite/src/utils/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 
 class TasksScreen extends StatelessWidget {
-  TasksScreen({Key? key}) : super(key: key);
+  TasksScreen({super.key});
 
   // Placeholder data
   final List<TaskModel> placeholderTasks = [
@@ -14,7 +14,7 @@ class TasksScreen extends StatelessWidget {
       assigneeId: 'user1',
       projectId: 'project1',
       createdById: 'user2',
-      createdAt: DateTime.now(), // Use DateTime.now()
+      createdAt: DateTime.now(),
     ),
     TaskModel(
       taskId: '2',
@@ -23,7 +23,7 @@ class TasksScreen extends StatelessWidget {
       assigneeId: 'user2',
       projectId: 'project1',
       createdById: 'user1',
-      createdAt: DateTime.now(), // Use DateTime.now()
+      createdAt: DateTime.now(),
     ),
   ];
 

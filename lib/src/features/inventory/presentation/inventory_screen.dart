@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:teamhub_productivity_suite/src/utils/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 import 'package:teamhub_productivity_suite/src/models/inventory_item_model.dart';
 import 'package:teamhub_productivity_suite/src/features/inventory/data/inventory_categories.dart';
 
 class InventoryScreen extends StatefulWidget {
-  const InventoryScreen({Key? key}) : super(key: key);
+  const InventoryScreen({super.key});
 
   @override
   State<InventoryScreen> createState() => _InventoryScreenState();

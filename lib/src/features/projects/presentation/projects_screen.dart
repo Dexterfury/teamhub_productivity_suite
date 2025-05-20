@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:teamhub_productivity_suite/src/models/project_model.dart';
-import 'package:teamhub_productivity_suite/src/utils/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 
 class ProjectsScreen extends StatelessWidget {
-  ProjectsScreen({Key? key}) : super(key: key);
+  ProjectsScreen({super.key});
 
   // Placeholder data
   final List<ProjectModel> placeholderProjects = [

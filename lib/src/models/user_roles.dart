@@ -1,4 +1,4 @@
-import 'package:teamhub_productivity_suite/src/utils/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 
 class UserRoles {
   bool isAdmin;

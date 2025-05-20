@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:teamhub_productivity_suite/src/common_widgets/root_layout.dart';
 import 'package:teamhub_productivity_suite/src/features/auth/presentation/forgot_password_screen.dart';

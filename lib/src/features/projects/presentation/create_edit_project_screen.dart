@@ -4,7 +4,7 @@ import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 class CreateEditProjectScreen extends StatelessWidget {
   final String? projectId; // Null if creating, not null if editing
 
-  const CreateEditProjectScreen({Key? key, this.projectId}) : super(key: key);
+  const CreateEditProjectScreen({super.key, this.projectId});
 
   bool get isEditing => projectId != null;
 

@@ -55,8 +55,7 @@ class AppStrings {
   static const String fieldProjectName = 'projectName';
   static const String fieldProjectDescription = 'projectDescription';
   static const String fieldMemberIds = 'memberIds';
-  static const String fieldCreatedByProjectId = 'createdById'; // Differentiate if needed
-  static const String fieldCreatedAtProject = 'createdAt'; // Differentiate if needed
+  
 
   // Inventory Model Fields
   static const String fieldInventoryItemId = 'inventoryItemId';
@@ -65,6 +64,11 @@ class AppStrings {
   static const String fieldQuantity = 'quantity';
   static const String fieldCategory = 'category';
   static const String fieldSupplier = 'supplier';
+  static const String fieldId = 'id';
+
+  
+
+
 
   // Authentication Strings
   static const String loginTitle = 'Welcome Back!';

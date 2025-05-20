@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:teamhub_productivity_suite/src/utils/appstrings.dart';
 
 class RootLayout extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   const RootLayout({
-    Key? key,
+    super.key,
     required this.navigationShell,
-  }) : super(key: key);
+  });
 
   void _onTap(BuildContext context, int index) {
     navigationShell.goBranch(

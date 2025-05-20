@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:teamhub_productivity_suite/src/models/project_model.dart';
-import 'package:teamhub_productivity_suite/src/utils/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 
 class ProjectDetailsScreen extends StatelessWidget {
   final String projectId; // To receive the project ID via navigation
 
-  ProjectDetailsScreen({Key? key, required this.projectId}) : super(key: key);
+  ProjectDetailsScreen({super.key, required this.projectId});
 
   // Placeholder data (replace with actual data fetching later)
   final ProjectModel placeholderProject = ProjectModel(
