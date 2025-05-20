@@ -5,13 +5,11 @@ class UserRoles {
   bool isManager;
   bool isMember;
   ApproverLevel approverLevel;
-
-  // Additional roles based on AppStrings fields
   bool canAccessPOS;
   bool canBalanceShifts;
   bool canAccessProcurement;
   bool canAccessAccounting;
-  bool canManageSuppliers;
+  bool canManageCustomersAndSuppliers;
   bool canManageItems;
   bool canManageEquipment;
   bool canProcessRentals;
@@ -28,14 +26,13 @@ class UserRoles {
   UserRoles({
     this.isAdmin = false,
     this.isManager = false,
-    this.isMember = true, // Default to true for a standard user
+    this.isMember = true,
     this.approverLevel = ApproverLevel.none,
-    // Initialize additional roles
     this.canAccessPOS = false,
     this.canBalanceShifts = false,
     this.canAccessProcurement = false,
     this.canAccessAccounting = false,
-    this.canManageSuppliers = false,
+    this.canManageCustomersAndSuppliers = false,
     this.canManageItems = false,
     this.canManageEquipment = false,
     this.canProcessRentals = false,
@@ -63,7 +60,7 @@ class UserRoles {
       canBalanceShifts: map[AppStrings.fieldCanBalanceShifts] ?? false,
       canAccessProcurement: map[AppStrings.fieldCanAccessProcurement] ?? false,
       canAccessAccounting: map[AppStrings.fieldCanAccessAccounting] ?? false,
-      canManageSuppliers: map[AppStrings.fieldCanManageSuppliers] ?? false,
+      canManageCustomersAndSuppliers: map[AppStrings.fieldCanManageCustomersAndSuppliers] ?? false,
       canManageItems: map[AppStrings.fieldCanManageItems] ?? false,
       canManageEquipment: map[AppStrings.fieldCanManageEquipment] ?? false,
       canProcessRentals: map[AppStrings.fieldCanProcessRentals] ?? false,
@@ -89,7 +86,7 @@ class UserRoles {
       AppStrings.fieldCanBalanceShifts: canBalanceShifts,
       AppStrings.fieldCanAccessProcurement: canAccessProcurement,
       AppStrings.fieldCanAccessAccounting: canAccessAccounting,
-      AppStrings.fieldCanManageSuppliers: canManageSuppliers,
+      AppStrings.fieldCanManageCustomersAndSuppliers: canManageCustomersAndSuppliers,
       AppStrings.fieldCanManageItems: canManageItems,
       AppStrings.fieldCanManageEquipment: canManageEquipment,
       AppStrings.fieldCanProcessRentals: canProcessRentals,

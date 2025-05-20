@@ -39,12 +39,12 @@ class TaskModel {
     }
 
     DateTime createdAt;
-     if (map[AppStrings.fieldCreatedAtTask] == null) {
+     if (map[AppStrings.fieldCreatedAt] == null) {
       createdAt = DateTime.now();
-    } else if (map[AppStrings.fieldCreatedAtTask] is Timestamp) {
-      createdAt = (map[AppStrings.fieldCreatedAtTask] as Timestamp).toDate();
-    } else if (map[AppStrings.fieldCreatedAtTask] is String) {
-      createdAt = DateTime.tryParse(map[AppStrings.fieldCreatedAtTask] as String) ?? DateTime.now();
+    } else if (map[AppStrings.fieldCreatedAt] is Timestamp) {
+      createdAt = (map[AppStrings.fieldCreatedAt] as Timestamp).toDate();
+    } else if (map[AppStrings.fieldCreatedAt] is String) {
+      createdAt = DateTime.tryParse(map[AppStrings.fieldCreatedAt] as String) ?? DateTime.now();
     }
      else {
       createdAt = DateTime.now();
@@ -62,7 +62,7 @@ class TaskModel {
       ),
       assigneeId: map[AppStrings.fieldAssigneeId] ?? '',
       projectId: map[AppStrings.fieldTaskProjectId] ?? '',
-      createdById: map[AppStrings.fieldCreatedById] ?? '',
+      createdById: map[AppStrings.fieldCreatedBy] ?? '',
       createdAt: createdAt,
     );
   }
@@ -76,8 +76,8 @@ class TaskModel {
       AppStrings.fieldStatus: status.toString().split('.').last,
       AppStrings.fieldAssigneeId: assigneeId,
       AppStrings.fieldTaskProjectId: projectId,
-      AppStrings.fieldCreatedById: createdById,
-      AppStrings.fieldCreatedAtTask: Timestamp.fromDate(createdAt),
+      AppStrings.fieldCreatedBy: createdById,
+      AppStrings.fieldCreatedAt: Timestamp.fromDate(createdAt),
     };
   }
 }

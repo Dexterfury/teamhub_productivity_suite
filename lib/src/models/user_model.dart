@@ -16,6 +16,8 @@ class UserModel {
   List<String> searchTokens;
   String? assignedOrganizationId; // For multi-tenancy or org structure
   String? jobTitle;
+  String? fcmToken;
+
 
   UserModel({
     required this.uid,
@@ -31,6 +33,7 @@ class UserModel {
     this.searchTokens = const [],
     this.assignedOrganizationId,
     this.jobTitle,
+    this.fcmToken,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map, String uid) {
@@ -72,6 +75,7 @@ class UserModel {
       searchTokens: List<String>.from(map[AppStrings.fieldSearchTokens] ?? []),
       assignedOrganizationId: map[AppStrings.fieldAssignedOrganizationId],
       jobTitle: map[AppStrings.fieldJobTitle],
+      fcmToken: map[AppStrings.fieldFcmToken],
     );
   }
 
@@ -90,6 +94,7 @@ class UserModel {
       AppStrings.fieldSearchTokens: searchTokens,
       AppStrings.fieldAssignedOrganizationId: assignedOrganizationId,
       AppStrings.fieldJobTitle: jobTitle,
+      AppStrings.fieldFcmToken: fcmToken,
     };
   }
 
@@ -107,6 +112,7 @@ class UserModel {
     List<String>? searchTokens,
     String? assignedOrganizationId,
     String? jobTitle,
+    String? fcmToken,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -122,6 +128,7 @@ class UserModel {
       searchTokens: searchTokens ?? this.searchTokens,
       assignedOrganizationId: assignedOrganizationId ?? this.assignedOrganizationId,
       jobTitle: jobTitle ?? this.jobTitle,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 }

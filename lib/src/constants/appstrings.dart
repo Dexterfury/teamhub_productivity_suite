@@ -13,6 +13,7 @@ class AppStrings {
   static const String fieldSearchTokens = 'searchTokens';
   static const String fieldAssignedOrganizationId = 'assignedOrganizationId';
   static const String fieldJobTitle = 'jobTitle';
+  static const String fieldFcmToken = 'fcmToken';
 
   // User Role Fields
   static const String fieldIsAdmin = 'isAdmin';
@@ -25,7 +26,7 @@ class AppStrings {
   static const String fieldCanBalanceShifts = 'canBalanceShifts';
   static const String fieldCanAccessProcurement = 'canAccessProcurement';
   static const String fieldCanAccessAccounting = 'canAccessAccounting';
-  static const String fieldCanManageSuppliers = 'canManageSuppliers';
+  static const String fieldCanManageCustomersAndSuppliers = 'canManageCustomersAndSuppliers';
   static const String fieldCanManageItems = 'canManageItems';
   static const String fieldCanManageEquipment = 'canManageEquipment';
   static const String fieldCanProcessRentals = 'canProcessRentals';
@@ -46,9 +47,7 @@ class AppStrings {
   static const String fieldDueDate = 'dueDate';
   static const String fieldStatus = 'status';
   static const String fieldAssigneeId = 'assigneeId';
-  static const String fieldTaskProjectId = 'projectId'; // Renamed to be specific
-  static const String fieldCreatedById = 'createdById';
-  static const String fieldCreatedAtTask = 'createdAt'; // Differentiate if needed, or use a single constant
+  static const String fieldTaskProjectId = 'projectId';
 
   // Project Model Fields
   static const String fieldProjectProjectId = 'projectId'; // Renamed to be specific
@@ -154,6 +153,14 @@ class AppStrings {
   static const String passwordTooShortError = 'Password must be at least 6 characters long.';
   static const String passwordsDoNotMatchError = 'Passwords do not match.';
   static const String requiredFieldError = 'This field is required.';
+
+  // Firestore collections
+  static const String collectionUsers = 'users';
+  static const String collectionProjects = 'projects';
+  static const String collectionTasks = 'tasks';
+  static const String collectionInventory = 'inventory';
+
+
 }
 
 enum ApproverLevel {
