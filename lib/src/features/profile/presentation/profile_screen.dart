@@ -317,11 +317,12 @@ class ProfileScreen extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                // TODO: Implement check for admin role before navigating
-                context.go('/admin-panel');
+                // TODO: Implement actual admin role check
+                // For now, assume user is admin to show the button
+                context.go('/admin-panel/manage-users');
               },
               icon: const Icon(Icons.admin_panel_settings_outlined),
-              label: const Text('Admin Panel'),
+              label: const Text(AppStrings.manageUsersTitle),
             ),
           ),
           const SizedBox(height: 12.0),
