@@ -18,11 +18,8 @@ final goRouter = GoRouter(
   initialLocation: '/login',
   routes: [
     // Auth routes
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginScreen(),
-    ),
-    
+    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+
     // Main navigation shell
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -43,7 +40,7 @@ final goRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/projects',
-              builder: (context, state) => ProjectsScreen(),
+              builder: (context, state) => ProjectsListScreen(),
               routes: [
                 GoRoute(
                   path: 'new',
@@ -101,7 +98,8 @@ final goRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: 'new',
-                  builder: (context, state) => const AddEditInventoryItemScreen(),
+                  builder:
+                      (context, state) => const AddEditInventoryItemScreen(),
                 ),
                 GoRoute(
                   path: ':id/edit',
@@ -140,7 +138,7 @@ final goRouter = GoRouter(
     ),
     GoRoute(
       path: '/projects',
-      builder: (context, state) => ProjectsScreen(),
+      builder: (context, state) => ProjectsListScreen(),
     ),
     GoRoute(
       path: '/projects/new',
@@ -160,10 +158,7 @@ final goRouter = GoRouter(
         return CreateEditProjectScreen(projectId: projectId);
       },
     ),
-    GoRoute(
-      path: '/tasks',
-      builder: (context, state) => TasksScreen(),
-    ),
+    GoRoute(path: '/tasks', builder: (context, state) => TasksScreen()),
     GoRoute(
       path: '/tasks/new',
       builder: (context, state) {
@@ -177,6 +172,6 @@ final goRouter = GoRouter(
         final taskId = state.pathParameters['id']!;
         return CreateEditTaskScreen(taskId: taskId);
       },
-    ),    // Inventory routes are handled in the StatefulShellBranch
+    ), // Inventory routes are handled in the StatefulShellBranch
   ],
 );
