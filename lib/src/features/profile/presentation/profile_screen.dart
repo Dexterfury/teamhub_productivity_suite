@@ -14,7 +14,6 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(),
         title: const Text(AppStrings.profileTitle),
       ),
       body: SingleChildScrollView(
@@ -152,6 +151,7 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min, // Ensure column only takes necessary vertical space
           children: [
             Row(
               children: [
