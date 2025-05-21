@@ -27,7 +27,7 @@ class DashboardScreen extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.account_circle_outlined),
-            onPressed: () => context.go('/profile'),
+            onPressed: () => context.go('/profile?fromDashboard=true'),
             tooltip: 'Profile',
           ),
         ],

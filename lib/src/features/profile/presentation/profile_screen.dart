@@ -14,6 +14,13 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading:
+            context.canPop()
+                ? BackButton(onPressed: () => context.pop())
+                : IconButton(
+                  icon: const Icon(Icons.home),
+                  onPressed: () => context.go('/dashboard'),
+                ),
         title: const Text(AppStrings.profileTitle),
       ),
       body: SingleChildScrollView(
@@ -151,7 +158,9 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // Ensure column only takes necessary vertical space
+          mainAxisSize:
+              MainAxisSize
+                  .min, // Ensure column only takes necessary vertical space
           children: [
             Row(
               children: [
@@ -300,6 +309,19 @@ class ProfileScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
               ),
+            ),
+          ),
+          const SizedBox(height: 12.0),
+          // Admin Panel Button (Placeholder - show only for admins)
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                // TODO: Implement check for admin role before navigating
+                context.go('/admin-panel');
+              },
+              icon: const Icon(Icons.admin_panel_settings_outlined),
+              label: const Text('Admin Panel'),
             ),
           ),
           const SizedBox(height: 12.0),

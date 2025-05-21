@@ -26,7 +26,8 @@ class AppStrings {
   static const String fieldCanBalanceShifts = 'canBalanceShifts';
   static const String fieldCanAccessProcurement = 'canAccessProcurement';
   static const String fieldCanAccessAccounting = 'canAccessAccounting';
-  static const String fieldCanManageCustomersAndSuppliers = 'canManageCustomersAndSuppliers';
+  static const String fieldCanManageCustomersAndSuppliers =
+      'canManageCustomersAndSuppliers';
   static const String fieldCanManageItems = 'canManageItems';
   static const String fieldCanManageEquipment = 'canManageEquipment';
   static const String fieldCanProcessRentals = 'canProcessRentals';
@@ -35,10 +36,12 @@ class AppStrings {
   static const String fieldCanManageOrganizations = 'canManageOrganizations';
   static const String fieldCanManageSites = 'canManageSites';
   static const String fieldCanGenerateInvoices = 'canGenerateInvoices';
-  static const String fieldCanManageAccountingPeriods = 'canManageAccountingPeriods';
-  static const String fieldCanOverrideRolloverConditions = 'canOverrideRolloverConditions';
-  static const String fieldCanPostToSoftClosedPeriod = 'canPostToSoftClosedPeriod';
-
+  static const String fieldCanManageAccountingPeriods =
+      'canManageAccountingPeriods';
+  static const String fieldCanOverrideRolloverConditions =
+      'canOverrideRolloverConditions';
+  static const String fieldCanPostToSoftClosedPeriod =
+      'canPostToSoftClosedPeriod';
 
   // Task Model Fields
   static const String fieldTaskId = 'taskId';
@@ -50,11 +53,11 @@ class AppStrings {
   static const String fieldTaskProjectId = 'projectId';
 
   // Project Model Fields
-  static const String fieldProjectProjectId = 'projectId'; // Renamed to be specific
+  static const String fieldProjectProjectId =
+      'projectId'; // Renamed to be specific
   static const String fieldProjectName = 'projectName';
   static const String fieldProjectDescription = 'projectDescription';
   static const String fieldMemberIds = 'memberIds';
-  
 
   // Inventory Model Fields
   static const String fieldInventoryItemId = 'inventoryItemId';
@@ -64,10 +67,6 @@ class AppStrings {
   static const String fieldCategory = 'category';
   static const String fieldSupplier = 'supplier';
   static const String fieldId = 'id';
-
-  
-
-
 
   // Authentication Strings
   static const String loginTitle = 'Welcome Back!';
@@ -88,7 +87,8 @@ class AppStrings {
   static const String loginLink = 'Login';
 
   static const String forgotPasswordTitle = 'Forgot Password';
-  static const String forgotPasswordSubtitle = 'Enter your email to reset your password';
+  static const String forgotPasswordSubtitle =
+      'Enter your email to reset your password';
   static const String sendResetLinkButton = 'Send Reset Link';
 
   // General UI Strings
@@ -98,7 +98,8 @@ class AppStrings {
   static const String inventoryTitle = 'Inventory';
   static const String usersTitle = 'Users';
   static const String profileTitle = 'Profile';
-  static const String settingsTitle = 'Settings'; // Example, not in requirements but good practice
+  static const String settingsTitle =
+      'Settings'; // Example, not in requirements but good practice
 
   static const String myTasksSection = 'My Tasks';
   static const String recentProjectsSection = 'Recent Projects';
@@ -137,11 +138,14 @@ class AppStrings {
 
   // Placeholder Data Strings
   static const String placeholderProjectName = 'Sample Project';
-  static const String placeholderProjectDescription = 'This is a placeholder project description. It should be long enough to demonstrate truncation in the list view.';
+  static const String placeholderProjectDescription =
+      'This is a placeholder project description. It should be long enough to demonstrate truncation in the list view.';
   static const String placeholderTaskTitle = 'Complete UI for Login Screen';
-  static const String placeholderTaskDescription = 'Implement the visual elements and layout for the login screen according to the design specifications.';
+  static const String placeholderTaskDescription =
+      'Implement the visual elements and layout for the login screen according to the design specifications.';
   static const String placeholderItemName = 'Laptop';
-  static const String placeholderItemDescription = 'Standard issue work laptop.';
+  static const String placeholderItemDescription =
+      'Standard issue work laptop.';
   static const String placeholderUserName = 'John Doe';
   static const String placeholderUserEmail = 'john.doe@example.com';
   static const String placeholderJobTitle = 'Software Engineer';
@@ -150,7 +154,8 @@ class AppStrings {
   static const String genericError = 'An unexpected error occurred.';
   static const String networkError = 'Please check your internet connection.';
   static const String invalidEmailError = 'Please enter a valid email address.';
-  static const String passwordTooShortError = 'Password must be at least 6 characters long.';
+  static const String passwordTooShortError =
+      'Password must be at least 6 characters long.';
   static const String passwordsDoNotMatchError = 'Passwords do not match.';
   static const String requiredFieldError = 'This field is required.';
 
@@ -160,12 +165,43 @@ class AppStrings {
   static const String collectionTasks = 'tasks';
   static const String collectionInventory = 'inventory';
 
+  // Admin Panel Strings
+  static const String manageUsersTitle = 'Manage Users';
+  static const String searchUsersHint = 'Search users by name or email...';
+  static const String noUsersFound = 'No users found';
+  static const String tryDifferentSearchTerm = 'Try a different search term';
+  static const String tryDifferentFilter = 'Try a different role filter';
+  static const String noUsersMessage =
+      'No users to display. Add new users to get started.';
+  static const String editRolesTooltip = 'Edit User Roles';
+  static const String editRolesFor = 'Edit Roles for';
+  static const String roleAdmin = 'Admin';
+  static const String roleManager = 'Manager';
+  static const String roleMember = 'Member';
+  static const String approverLevel = 'Approver Level';
+  static const String rolesUpdatedFor = 'Roles updated for';
 
+  // User Role Permissions Strings
+  static const String canAccessPOS = 'Can Access POS';
+  static const String canBalanceShifts = 'Can Balance Shifts';
+  static const String canAccessProcurement = 'Can Access Procurement';
+  static const String canAccessAccounting = 'Can Access Accounting';
+  static const String canManageCustomersAndSuppliers =
+      'Can Manage Customers & Suppliers';
+  static const String canManageItems = 'Can Manage Items';
+  static const String canManageEquipment = 'Can Manage Equipment';
+  static const String canProcessRentals = 'Can Process Rentals';
+  static const String canPerformStockCount = 'Can Perform Stock Count';
+  static const String canManageUsers = 'Can Manage Users';
+  static const String canManageOrganizations = 'Can Manage Organizations';
+  static const String canManageSites = 'Can Manage Sites';
+  static const String canGenerateInvoices = 'Can Generate Invoices';
+  static const String canManageAccountingPeriods =
+      'Can Manage Accounting Periods';
+  static const String canOverrideRolloverConditions =
+      'Can Override Rollover Conditions';
+  static const String canPostToSoftClosedPeriod =
+      'Can Post to Soft Closed Period';
 }
 
-enum ApproverLevel {
-  none,
-  level1,
-  level2,
-  level3,
-}
+enum ApproverLevel { none, level1, level2, level3 }
