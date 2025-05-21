@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 import 'package:teamhub_productivity_suite/src/common_widgets/root_layout.dart';
-import 'package:teamhub_productivity_suite/src/features/admin_panel/presentation/admin_panel_screen.dart';
 import 'package:teamhub_productivity_suite/src/features/admin_panel/presentation/manage_users_screen.dart';
 import 'package:teamhub_productivity_suite/src/features/auth/presentation/forgot_password_screen.dart';
 import 'package:teamhub_productivity_suite/src/features/auth/presentation/login_screen.dart';
@@ -117,16 +116,6 @@ final goRouter = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/admin-panel',
-      builder: (context, state) => const AdminPanelScreen(),
-      routes: [
-        GoRoute(
-          path: 'manage-users',
-          builder: (context, state) => const ManageUsersScreen(),
-        ),
-      ],
-    ),
-    GoRoute(
       path: '/register',
       builder: (context, state) => const RegistrationScreen(),
     ),
@@ -151,6 +140,10 @@ final goRouter = GoRouter(
         }
         return null; // Otherwise, allow navigation to /profile.
       },
+    ),
+    GoRoute(
+      path: '/profile/manage-users',
+      builder: (context, state) => const ManageUsersScreen(),
     ),
     GoRoute(
       path: '/profile/edit',

@@ -317,9 +317,8 @@ class ProfileScreen extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                // TODO: Implement actual admin role check
                 // For now, assume user is admin to show the button
-                context.go('/admin-panel/manage-users');
+                context.go('/profile/manage-users');
               },
               icon: const Icon(Icons.admin_panel_settings_outlined),
               label: const Text(AppStrings.manageUsersTitle),
