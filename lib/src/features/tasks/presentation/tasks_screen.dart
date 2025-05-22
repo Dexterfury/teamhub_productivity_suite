@@ -48,11 +48,11 @@ class TasksScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: 'tasksScreenFAB', // Add unique heroTag
+        heroTag: 'tasks_fab',
         onPressed: () {
           context.go('/tasks/new');
         },
-        tooltip: 'Create new task', // Added tooltip for consistency
+        tooltip: 'Create new task',
         child: const Icon(Icons.add),
       ),
     );

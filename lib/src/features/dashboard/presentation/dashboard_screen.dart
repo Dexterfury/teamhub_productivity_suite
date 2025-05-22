@@ -86,6 +86,7 @@ class DashboardScreen extends StatelessWidget {
       // Add a drawer for mobile view
       drawer: screenWidth < 600 ? _buildDrawer(context) : null,
       floatingActionButton: FloatingActionButton(
+        heroTag: 'dashboard_fab',
         onPressed: () {
           context.go('/tasks/new');
         },

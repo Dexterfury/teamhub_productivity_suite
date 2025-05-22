@@ -122,6 +122,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'inventory_fab',
         onPressed: () => context.go('/inventory/new'),
         icon: const Icon(Icons.add),
         label: const Text('Add Item'),

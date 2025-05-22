@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/widgets/responsive_container.dart';
 
 class CreateEditTaskScreen extends StatelessWidget {
   final String? taskId; // Null if creating, not null if editing
@@ -20,124 +21,122 @@ class CreateEditTaskScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: AppStrings.taskTitleHint,
-                border: OutlineInputBorder(),
+        child: ResponsiveContainer(
+          maxWidthMedium: 600,
+          maxWidthLarge: 800,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: AppStrings.taskTitleHint,
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              maxLines: 3,
-              decoration: InputDecoration(
-                labelText: AppStrings.taskDescriptionHint,
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16.0),
+              TextField(
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.taskDescriptionHint,
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            const SizedBox(height: 16.0),
-            // TODO: Due Date Picker Placeholder
-            TextField(
-              decoration: InputDecoration(
-                labelText: AppStrings.dueDateHint,
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16.0),
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: AppStrings.dueDateHint,
+                  border: OutlineInputBorder(),
+                ),
+                readOnly: true,
+                onTap: () {
+                  // TODO: Show Date Picker
+                },
               ),
-              readOnly:
-                  true, // Make it read-only to indicate it's a date picker
-              onTap: () {
-                // TODO: Show Date Picker
-              },
-            ),
-            const SizedBox(height: 16.0),
-            // TODO: Status Dropdown Placeholder
-            DropdownButtonFormField<String>(
-              isDense: true,
-              decoration: InputDecoration(
-                labelText: AppStrings.statusHint,
-                border: OutlineInputBorder(),
-              ),
-              items:
-                  ['Todo', 'In Progress', 'Completed']
-                      .map(
-                        (status) => DropdownMenuItem(
-                          value: status,
-                          child: Text(status),
-                        ),
-                      )
-                      .toList(),
-              onChanged: (value) {
-                // TODO: Handle status change
-              },
-              hint: Text(AppStrings.statusHint),
-            ),
-            const SizedBox(height: 16.0),
-            // TODO: Assignee Dropdown Placeholder
-            DropdownButtonFormField<String>(
-              isDense: true,
-              decoration: InputDecoration(
-                labelText: AppStrings.assigneeHint,
-                border: OutlineInputBorder(),
-              ),
-              items:
-                  ['User 1', 'User 2', 'User 3'] // Placeholder users
-                      .map(
-                        (user) =>
-                            DropdownMenuItem(value: user, child: Text(user)),
-                      )
-                      .toList(),
-              onChanged: (value) {
-                // TODO: Handle assignee change
-              },
-              hint: Text(AppStrings.assigneeHint),
-            ),
-            const SizedBox(height: 16.0),
-            if (projectId ==
-                null) // Only show project selection if not creating within a project
+              const SizedBox(height: 16.0),
               DropdownButtonFormField<String>(
                 isDense: true,
-                decoration: InputDecoration(
-                  labelText: AppStrings.selectProjectHint,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.statusHint,
                   border: OutlineInputBorder(),
                 ),
                 items:
-                    [
-                          'Project A',
-                          'Project B',
-                          'Project C',
-                        ] // Placeholder projects
+                    ['Todo', 'In Progress', 'Completed']
                         .map(
-                          (project) => DropdownMenuItem(
-                            value: project,
-                            child: Text(project),
+                          (status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(status),
                           ),
                         )
                         .toList(),
                 onChanged: (value) {
-                  // TODO: Handle project selection
+                  // TODO: Handle status change
                 },
-                hint: Text(AppStrings.selectProjectHint),
+                hint: const Text(AppStrings.statusHint),
               ),
-            const SizedBox(height: 24.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement Save logic
-                  },
-                  child: const Text(AppStrings.saveButton),
+              const SizedBox(height: 16.0),
+              DropdownButtonFormField<String>(
+                isDense: true,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.assigneeHint,
+                  border: OutlineInputBorder(),
                 ),
-                TextButton(
-                  onPressed: () {
-                    context.pop();
+                items:
+                    ['User 1', 'User 2', 'User 3']
+                        .map(
+                          (user) =>
+                              DropdownMenuItem(value: user, child: Text(user)),
+                        )
+                        .toList(),
+                onChanged: (value) {
+                  // TODO: Handle assignee change
+                },
+                hint: const Text(AppStrings.assigneeHint),
+              ),
+              const SizedBox(height: 16.0),
+              if (projectId == null)
+                DropdownButtonFormField<String>(
+                  isDense: true,
+                  decoration: const InputDecoration(
+                    labelText: AppStrings.selectProjectHint,
+                    border: OutlineInputBorder(),
+                  ),
+                  items:
+                      ['Project A', 'Project B', 'Project C']
+                          .map(
+                            (project) => DropdownMenuItem(
+                              value: project,
+                              child: Text(project),
+                            ),
+                          )
+                          .toList(),
+                  onChanged: (value) {
+                    // TODO: Handle project selection
                   },
-                  child: const Text(AppStrings.cancelButton),
+                  hint: const Text(AppStrings.selectProjectHint),
                 ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 24.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // TODO: Implement Save logic
+                      },
+                      child: const Text(AppStrings.saveButton),
+                    ),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => context.pop(),
+                      child: const Text(AppStrings.cancelButton),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
