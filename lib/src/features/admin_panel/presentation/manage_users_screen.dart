@@ -68,7 +68,10 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
     final isTabletOrLarger = screenWidth >= 600;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.manageUsersTitle)),
+      appBar: AppBar(
+        leading: BackButton(onPressed: () => context.pop()),
+        title: const Text(AppStrings.manageUsersTitle),
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           // TODO: Implement refresh logic to fetch latest users

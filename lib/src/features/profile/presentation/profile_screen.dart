@@ -173,7 +173,7 @@ class ProfileScreen extends StatelessWidget {
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.edit_outlined, size: 20),
-                  onPressed: () => context.go('/profile/edit'),
+                  onPressed: () => context.push('/profile/edit'),
                   tooltip: 'Edit ${title.toLowerCase()}',
                 ),
               ],
@@ -271,6 +271,7 @@ class ProfileScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton.icon(
+            // For tablet and larger
             onPressed: () => context.go('/profile/edit'),
             icon: const Icon(Icons.edit),
             label: const Text(AppStrings.editProfileTitle),
@@ -303,7 +304,7 @@ class ProfileScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => context.go('/profile/edit'),
+              onPressed: () => context.push('/profile/edit'),
               icon: const Icon(Icons.edit),
               label: const Text(AppStrings.editProfileTitle),
               style: ElevatedButton.styleFrom(
@@ -318,7 +319,7 @@ class ProfileScreen extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () {
                 // For now, assume user is admin to show the button
-                context.go('/profile/manage-users');
+                context.push('/profile/manage-users');
               },
               icon: const Icon(Icons.admin_panel_settings_outlined),
               label: const Text(AppStrings.manageUsersTitle),

@@ -22,12 +22,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     // Initialize controllers with placeholder data
-    _fullNameController = TextEditingController(text: AppStrings.placeholderUserName);
-    _jobTitleController = TextEditingController(text: AppStrings.placeholderJobTitle);
-    _emailController = TextEditingController(text: AppStrings.placeholderUserEmail);
-    _phoneController = TextEditingController(text: '+1 234 567 8900'); // Placeholder
-    _departmentController = TextEditingController(text: 'Engineering'); // Placeholder
-    _locationController = TextEditingController(text: 'San Francisco, CA'); // Placeholder
+    _fullNameController = TextEditingController(
+      text: AppStrings.placeholderUserName,
+    );
+    _jobTitleController = TextEditingController(
+      text: AppStrings.placeholderJobTitle,
+    );
+    _emailController = TextEditingController(
+      text: AppStrings.placeholderUserEmail,
+    );
+    _phoneController = TextEditingController(
+      text: '+1 234 567 8900',
+    ); // Placeholder
+    _departmentController = TextEditingController(
+      text: 'Engineering',
+    ); // Placeholder
+    _locationController = TextEditingController(
+      text: 'San Francisco, CA',
+    ); // Placeholder
   }
 
   @override
@@ -45,12 +57,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(onPressed: () => context.pop()),
         title: const Text(AppStrings.editProfileTitle),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: _saveProfile,
-          ),
+          IconButton(icon: const Icon(Icons.check), onPressed: _saveProfile),
         ],
       ),
       body: SingleChildScrollView(
@@ -157,6 +167,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
     );
   }
+
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
       // TODO: Implement save profile logic
