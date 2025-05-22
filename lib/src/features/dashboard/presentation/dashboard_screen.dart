@@ -87,7 +87,7 @@ class DashboardScreen extends StatelessWidget {
       drawer: screenWidth < 600 ? _buildDrawer(context) : null,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Implement add task functionality
+          context.go('/tasks/new');
         },
         tooltip: 'Add Task',
         child: const Icon(Icons.add),

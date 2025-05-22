@@ -133,6 +133,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
                 ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'projectsListFAB', // Add unique heroTag
         onPressed: () => context.go('/projects/new'),
         icon: const Icon(Icons.add),
         label: const Text('New Project'),
@@ -254,7 +255,8 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
       // This allows the Spacer within the Column to work correctly.
       child: SizedBox(
         height: 160, // You can adjust this height as needed for your UI.
-        width: double.infinity, // Ensures the Card takes the width from Expanded.
+        width:
+            double.infinity, // Ensures the Card takes the width from Expanded.
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -271,7 +273,10 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
               const Spacer(), // This will now expand to fill the remaining space in the 160px SizedBox.
               Text(
                 value,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               Text(

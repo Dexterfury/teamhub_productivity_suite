@@ -41,19 +41,19 @@ class UserService {
         switch (roleFilter) {
           case 'Admin':
             query = query.where(
-              AppStrings.fieldRoles + '.' + AppStrings.fieldIsAdmin,
+              '${AppStrings.fieldRoles}.${AppStrings.fieldIsAdmin}',
               isEqualTo: true,
             );
             break;
           case 'Manager':
             query = query.where(
-              AppStrings.fieldRoles + '.' + AppStrings.fieldIsManager,
+              '${AppStrings.fieldRoles}.${AppStrings.fieldIsManager}',
               isEqualTo: true,
             );
             break;
           case 'Member':
             query = query.where(
-              AppStrings.fieldRoles + '.' + AppStrings.fieldIsMember,
+              '${AppStrings.fieldRoles}.${AppStrings.fieldIsMember}',
               isEqualTo: true,
             );
             break;

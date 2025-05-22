@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:teamhub_productivity_suite/src/models/task_model.dart';
+import 'package:go_router/go_router.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 
 class TasksScreen extends StatelessWidget {
@@ -30,9 +31,7 @@ class TasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.tasksTitle),
-      ),
+      appBar: AppBar(title: const Text(AppStrings.tasksTitle)),
       body: ListView.builder(
         itemCount: placeholderTasks.length,
         itemBuilder: (context, index) {
@@ -49,9 +48,11 @@ class TasksScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'tasksScreenFAB', // Add unique heroTag
         onPressed: () {
-          // TODO: Navigate to Create Task screen
+          context.go('/tasks/new');
         },
+        tooltip: 'Create new task', // Added tooltip for consistency
         child: const Icon(Icons.add),
       ),
     );

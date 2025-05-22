@@ -53,6 +53,15 @@ final goRouter = GoRouter(
                     final projectId = state.pathParameters['id']!;
                     return ProjectDetailsScreen(projectId: projectId);
                   },
+                  routes: [
+                    GoRoute(
+                      path: 'tasks/new',
+                      builder: (context, state) {
+                        final projectId = state.pathParameters['id']!;
+                        return CreateEditTaskScreen(projectId: projectId);
+                      },
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: ':id/edit',
@@ -124,18 +133,12 @@ final goRouter = GoRouter(
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
 
-    // Main app routes
-    GoRoute(
-      path: '/dashboard',
-      builder: (context, state) => const DashboardScreen(),
-    ),
+    // Profile routes (outside the main shell)
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileScreen(),
       redirect: (context, state) {
-        // Check if there is a previous location in the navigation history.
         if (state.uri.queryParameters['fromDashboard'] != 'true') {
-          // If not, redirect to the dashboard or another appropriate route.
           return '/dashboard';
         }
         return null; // Otherwise, allow navigation to /profile.
@@ -149,42 +152,5 @@ final goRouter = GoRouter(
       path: '/profile/edit',
       builder: (context, state) => const EditProfileScreen(),
     ),
-    GoRoute(
-      path: '/projects',
-      builder: (context, state) => ProjectsListScreen(),
-    ),
-    GoRoute(
-      path: '/projects/new',
-      builder: (context, state) => const CreateEditProjectScreen(),
-    ),
-    GoRoute(
-      path: '/projects/:id',
-      builder: (context, state) {
-        final projectId = state.pathParameters['id']!;
-        return ProjectDetailsScreen(projectId: projectId);
-      },
-    ),
-    GoRoute(
-      path: '/projects/:id/edit',
-      builder: (context, state) {
-        final projectId = state.pathParameters['id']!;
-        return CreateEditProjectScreen(projectId: projectId);
-      },
-    ),
-    GoRoute(path: '/tasks', builder: (context, state) => TasksScreen()),
-    GoRoute(
-      path: '/tasks/new',
-      builder: (context, state) {
-        final projectId = state.uri.queryParameters['projectId'];
-        return CreateEditTaskScreen(projectId: projectId);
-      },
-    ),
-    GoRoute(
-      path: '/tasks/:id/edit',
-      builder: (context, state) {
-        final taskId = state.pathParameters['id']!;
-        return CreateEditTaskScreen(taskId: taskId);
-      },
-    ), // Inventory routes are handled in the StatefulShellBranch
   ],
 );

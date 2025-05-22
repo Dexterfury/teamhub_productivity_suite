@@ -102,6 +102,7 @@ class ProjectDetailsScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'projectDetailsFAB', // Add unique heroTag
         onPressed: () {
           // Navigate to Create Task screen for this project
           context.go('/projects/$projectId/tasks/new');

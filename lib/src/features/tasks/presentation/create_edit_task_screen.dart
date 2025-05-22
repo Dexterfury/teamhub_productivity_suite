@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 
 class CreateEditTaskScreen extends StatelessWidget {
@@ -13,7 +14,9 @@ class CreateEditTaskScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? AppStrings.editTaskTitle : AppStrings.createTaskTitle),
+        title: Text(
+          isEditing ? AppStrings.editTaskTitle : AppStrings.createTaskTitle,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -41,7 +44,8 @@ class CreateEditTaskScreen extends StatelessWidget {
                 labelText: AppStrings.dueDateHint,
                 border: OutlineInputBorder(),
               ),
-              readOnly: true, // Make it read-only to indicate it's a date picker
+              readOnly:
+                  true, // Make it read-only to indicate it's a date picker
               onTap: () {
                 // TODO: Show Date Picker
               },
@@ -49,16 +53,20 @@ class CreateEditTaskScreen extends StatelessWidget {
             const SizedBox(height: 16.0),
             // TODO: Status Dropdown Placeholder
             DropdownButtonFormField<String>(
+              isDense: true,
               decoration: InputDecoration(
                 labelText: AppStrings.statusHint,
                 border: OutlineInputBorder(),
               ),
-              items: ['Todo', 'In Progress', 'Completed']
-                  .map((status) => DropdownMenuItem(
-                value: status,
-                child: Text(status),
-              ))
-                  .toList(),
+              items:
+                  ['Todo', 'In Progress', 'Completed']
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status),
+                        ),
+                      )
+                      .toList(),
               onChanged: (value) {
                 // TODO: Handle status change
               },
@@ -67,34 +75,45 @@ class CreateEditTaskScreen extends StatelessWidget {
             const SizedBox(height: 16.0),
             // TODO: Assignee Dropdown Placeholder
             DropdownButtonFormField<String>(
+              isDense: true,
               decoration: InputDecoration(
                 labelText: AppStrings.assigneeHint,
                 border: OutlineInputBorder(),
               ),
-              items: ['User 1', 'User 2', 'User 3'] // Placeholder users
-                  .map((user) => DropdownMenuItem(
-                value: user,
-                child: Text(user),
-              ))
-                  .toList(),
+              items:
+                  ['User 1', 'User 2', 'User 3'] // Placeholder users
+                      .map(
+                        (user) =>
+                            DropdownMenuItem(value: user, child: Text(user)),
+                      )
+                      .toList(),
               onChanged: (value) {
                 // TODO: Handle assignee change
               },
               hint: Text(AppStrings.assigneeHint),
             ),
             const SizedBox(height: 16.0),
-            if (projectId == null) // Only show project selection if not creating within a project
+            if (projectId ==
+                null) // Only show project selection if not creating within a project
               DropdownButtonFormField<String>(
+                isDense: true,
                 decoration: InputDecoration(
                   labelText: AppStrings.selectProjectHint,
                   border: OutlineInputBorder(),
                 ),
-                items: ['Project A', 'Project B', 'Project C'] // Placeholder projects
-                    .map((project) => DropdownMenuItem(
-                  value: project,
-                  child: Text(project),
-                ))
-                    .toList(),
+                items:
+                    [
+                          'Project A',
+                          'Project B',
+                          'Project C',
+                        ] // Placeholder projects
+                        .map(
+                          (project) => DropdownMenuItem(
+                            value: project,
+                            child: Text(project),
+                          ),
+                        )
+                        .toList(),
                 onChanged: (value) {
                   // TODO: Handle project selection
                 },
@@ -112,8 +131,7 @@ class CreateEditTaskScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    // TODO: Implement Cancel logic (navigate back)
-                    Navigator.of(context).pop();
+                    context.pop();
                   },
                   child: const Text(AppStrings.cancelButton),
                 ),
