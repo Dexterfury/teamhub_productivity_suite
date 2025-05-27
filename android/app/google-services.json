@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "418770956234",
+    "project_id": "teamhub-productivity-suit",
+    "storage_bucket": "teamhub-productivity-suit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418770956234:android:6ad1c58aa867553525a933",
+        "android_client_info": {
+          "package_name": "com.raphaeldaka.teamhubproductivitysuite"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANY-YzQeTE1z7RVoEmKwmGESx-Wj0fOSE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
