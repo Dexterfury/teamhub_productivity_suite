@@ -8,7 +8,10 @@ class AuthService {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<User?> signInWithEmailAndPassword(String email, String password) async {
+  Future<User?> signInWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
     try {
       UserCredential result = await auth.signInWithEmailAndPassword(
         email: email,
@@ -48,9 +51,9 @@ class AuthService {
         );
 
         await _firestore
-          .collection(AppStrings.collectionUsers)
-          .doc(user.uid)
-          .set(newUser.toMap());
+            .collection(AppStrings.collectionUsers)
+            .doc(user.uid)
+            .set(newUser.toMap());
       }
 
       return user;
@@ -96,6 +99,17 @@ class AuthService {
 
   List<String> _generateSearchTokens(String name) {
     final tokens = <String>[];
-    return tokens; // Implement token generation later if needed
+    if (name.isEmpty) return tokens;
+    final parts = name.split(' ');
+    for (int i = 0; i < parts.length; i++) {
+      final part = parts[i].toLowerCase();
+      tokens.add(part); // Add the full part
+      if (i > 0) {
+        tokens.add(
+          parts.sublist(0, i + 1).join(' ').toLowerCase(),
+        ); // Add cumulative parts
+      }
+    }
+    return tokens;
   }
 }

@@ -4,24 +4,23 @@ import 'package:teamhub_productivity_suite/src/models/user_model.dart';
 import 'package:teamhub_productivity_suite/src/services/auth_service.dart';
 import 'package:teamhub_productivity_suite/src/services/user_service.dart';
 
-class AuthProvider with ChangeNotifier {
+class AuthenticationProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
   final UserService _userService = UserService();
 
   User? _user;
   UserModel? _appUser;
   bool _isLoading = false;
+  bool _isInitialized = false;
   String? _errorMessage;
 
   User? get user => _user;
-
   UserModel? get appUser => _appUser;
-
   bool get isLoading => _isLoading;
-
+  bool get isInitialized => _isInitialized;
   String? get errorMessage => _errorMessage;
 
-  AuthProvider() {
+  AuthenticationProvider() {
     _authService.auth.authStateChanges().listen((User? firebaseUser) async {
       _user = firebaseUser;
       if (_user != null) {
@@ -29,6 +28,7 @@ class AuthProvider with ChangeNotifier {
       } else {
         _appUser = null;
       }
+      _isInitialized = true;
       notifyListeners();
     });
   }
@@ -54,7 +54,11 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _authService.registerWithEmailAndPassword(email, password, fullName);
+      await _authService.registerWithEmailAndPassword(
+        email,
+        password,
+        fullName,
+      );
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

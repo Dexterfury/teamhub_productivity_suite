@@ -202,6 +202,20 @@ class AppStrings {
       'Can Override Rollover Conditions';
   static const String canPostToSoftClosedPeriod =
       'Can Post to Soft Closed Period';
+
+  // error messages
+  static const String fullNameError = 'Full name is required.';
+  static const String emailError = 'Email is required.';
+  static const String passwordError = 'Password is required.';
+  static const String passwordLengthError =
+      'Password must be at least 6 characters long.';
+  static const String confirmPasswordError = 'Confirm password is required.';
+
+  static const String emailRequired = 'Email is required.';
+  static const String passwordRequired = 'Password is required.';
+  static const String invalidEmail = 'Please enter a valid email address.';
+  static const String passwordTooShort =
+      'Password must be at least 6 characters long.';
 }
 
 enum ApproverLevel { none, level1, level2, level3 }
