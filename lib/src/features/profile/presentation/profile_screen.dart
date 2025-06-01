@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/providers/authentication_provider.dart';
 import 'package:teamhub_productivity_suite/src/widgets/responsive_container.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -261,6 +263,7 @@ class ProfileScreen extends StatelessWidget {
 
   // Action buttons for profile
   Widget _buildActionButtons(BuildContext context) {
+    final authProvider = context.read<AuthenticationProvider>();
     // Get screen width for responsive layout
     final screenWidth = MediaQuery.of(context).size.width;
     final isTabletOrLarger = screenWidth >= 600;
@@ -284,7 +287,12 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(width: 16.0),
           TextButton.icon(
-            onPressed: () => context.go('/login'),
+            onPressed: () async {
+              await authProvider.signOut();
+              if (context.mounted) {
+                context.go('/login');
+              }
+            },
             icon: const Icon(Icons.logout),
             label: const Text(AppStrings.logoutButton),
             style: TextButton.styleFrom(
@@ -329,7 +337,12 @@ class ProfileScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: TextButton.icon(
-              onPressed: () => context.go('/login'),
+              onPressed: () async {
+                await authProvider.signOut();
+                if (context.mounted) {
+                  context.go('/login');
+                }
+              },
               icon: const Icon(Icons.logout),
               label: const Text(AppStrings.logoutButton),
               style: TextButton.styleFrom(

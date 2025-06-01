@@ -56,14 +56,13 @@ class MyApp extends StatelessWidget {
               final authPages = {'/login', '/register', '/forgot-password'};
 
               final isAuthPage = authPages.contains(currentPath);
-              final isOnLoadingPage = currentPath == '/loading';
 
-              if (!isLoggedIn && !isAuthPage && !isOnLoadingPage) {
+              if (!isLoggedIn && !isAuthPage) {
                 return '/login';
               }
 
               // Redirect to dashboard if logged in and trying to access login or registration pages
-              if (isLoggedIn && (isAuthPage || isOnLoadingPage)) {
+              if (isLoggedIn && (isAuthPage || currentPath == '/loading')) {
                 return '/dashboard';
               }
 
