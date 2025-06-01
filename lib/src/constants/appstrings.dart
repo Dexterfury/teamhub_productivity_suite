@@ -58,6 +58,7 @@ class AppStrings {
   static const String fieldProjectName = 'projectName';
   static const String fieldProjectDescription = 'projectDescription';
   static const String fieldMemberIds = 'memberIds';
+  static const String fieldProjectStatus = 'status';
 
   // Inventory Model Fields
   static const String fieldInventoryItemId = 'inventoryItemId';
