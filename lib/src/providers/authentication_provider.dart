@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 import 'package:teamhub_productivity_suite/src/models/user_model.dart';
 import 'package:teamhub_productivity_suite/src/services/auth_service.dart';
 import 'package:teamhub_productivity_suite/src/services/user_service.dart';
@@ -84,5 +87,68 @@ class AuthenticationProvider with ChangeNotifier {
 
   Future<void> signOut() async {
     await _authService.signOut();
+  }
+
+  /// Updates the current user's profile
+  Future<void> updateUserProfile({
+    String? fullName,
+    String? jobTitle,
+    String? phone,
+    String? department,
+    String? location,
+    File? profileImage,
+  }) async {
+    if (_user == null || _appUser == null) return;
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      Map<String, dynamic> updates = {};
+
+      // Add non-null fields to updates
+      if (fullName != null) updates[AppStrings.fieldFullName] = fullName;
+      if (jobTitle != null) updates[AppStrings.fieldJobTitle] = jobTitle;
+      if (phone != null) updates[AppStrings.fieldPhone] = phone;
+      if (department != null) updates[AppStrings.fieldDepartment] = department;
+      if (location != null) updates[AppStrings.fieldLocation] = location;
+
+      // Handle profile image upload if provided
+      if (profileImage != null) {
+        final imageUrl = await _userService.uploadProfileImage(
+          _user!.uid,
+          profileImage,
+        );
+        if (imageUrl != null) {
+          updates[AppStrings.fieldUserPhotoUrl] = imageUrl;
+        }
+      }
+
+      // Update user in Firestore
+      await _userService.updateUser(_user!.uid, updates);
+
+      // Update local user model
+      _appUser = _appUser!.copyWith(
+        fullName: fullName,
+        jobTitle: jobTitle,
+        phone: phone,
+        department: department,
+        location: location,
+        userPhotoUrl:
+            profileImage != null
+                ? updates[AppStrings.fieldUserPhotoUrl]
+                : _appUser!.userPhotoUrl,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

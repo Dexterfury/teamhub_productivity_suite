@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 import 'package:teamhub_productivity_suite/src/models/user_model.dart';
 import 'package:teamhub_productivity_suite/src/models/user_roles.dart';
@@ -92,6 +95,39 @@ class UserService {
     } catch (e) {
       print("Error updating user roles: $e");
       rethrow; // Re-throw to handle in UI
+    }
+  }
+
+  /// Updates user profile information in Firestore
+  Future<void> updateUser(String uid, Map<String, dynamic> updates) async {
+    try {
+      await _firestore
+          .collection(AppStrings.collectionUsers)
+          .doc(uid)
+          .update(updates);
+      print('User profile updated successfully for user ID: $uid');
+    } catch (e) {
+      print("Error updating user profile: $e");
+      rethrow; // Re-throw to handle in UI
+    }
+  }
+
+  /// Uploads profile image to Firebase Storage and returns the download URL
+  Future<String?> uploadProfileImage(String uid, File imageFile) async {
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child('$uid.jpg');
+
+      final uploadTask = await storageRef.putFile(imageFile);
+      final downloadUrl = await uploadTask.ref.getDownloadURL();
+
+      print('Profile image uploaded successfully: $downloadUrl');
+      return downloadUrl;
+    } catch (e) {
+      print("Error uploading profile image: $e");
+      rethrow;
     }
   }
 }

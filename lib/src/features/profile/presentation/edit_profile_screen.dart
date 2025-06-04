@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/providers/authentication_provider.dart';
+import 'package:teamhub_productivity_suite/src/widgets/profile_image_widget.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -11,35 +16,41 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _fullNameController;
-  late TextEditingController _jobTitleController;
-  late TextEditingController _emailController;
-  late TextEditingController _phoneController;
-  late TextEditingController _departmentController;
-  late TextEditingController _locationController;
+  TextEditingController _fullNameController = TextEditingController();
+  TextEditingController _jobTitleController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _departmentController = TextEditingController();
+  TextEditingController _locationController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     // Initialize controllers with placeholder data
-    _fullNameController = TextEditingController(
-      text: AppStrings.placeholderUserName,
-    );
-    _jobTitleController = TextEditingController(
-      text: AppStrings.placeholderJobTitle,
-    );
-    _emailController = TextEditingController(
-      text: AppStrings.placeholderUserEmail,
-    );
-    _phoneController = TextEditingController(
-      text: '+1 234 567 8900',
-    ); // Placeholder
-    _departmentController = TextEditingController(
-      text: 'Engineering',
-    ); // Placeholder
-    _locationController = TextEditingController(
-      text: 'San Francisco, CA',
-    ); // Placeholder
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
+    // Wait for the class to build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final appUser = context.read<AuthenticationProvider>().appUser;
+      setState(() {
+        _fullNameController = TextEditingController(text: appUser!.fullName);
+        _jobTitleController = TextEditingController(
+          text: appUser.jobTitle ?? AppStrings.placeholderJobNotSet,
+        );
+        _emailController = TextEditingController(text: appUser.email);
+        _phoneController = TextEditingController(
+          text: appUser.phone ?? AppStrings.placeholderPhoneNotSet,
+        );
+        _departmentController = TextEditingController(
+          text: appUser.department ?? AppStrings.placeholderDepartmentNotSet,
+        );
+        _locationController = TextEditingController(
+          text: appUser.location ?? AppStrings.placeholderNoLocation,
+        );
+      });
+    });
   }
 
   @override
@@ -52,6 +63,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _locationController.dispose();
     super.dispose();
   }
+
+  File? _selectedProfileImage;
+  // Variable to hold the selected profile image
 
   @override
   Widget build(BuildContext context) {
@@ -69,33 +83,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           key: _formKey,
           child: Column(
             children: [
-              Stack(
-                children: [
-                  const CircleAvatar(
-                    radius: 60,
-                    backgroundImage: NetworkImage(
-                      'https://i.pravatar.cc/300', // Placeholder avatar
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.camera_alt,
-                          size: 18,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          // TODO: Implement photo change
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+              ProfileImageWidget(
+                imageUrl:
+                    context
+                        .watch<AuthenticationProvider>()
+                        .appUser
+                        ?.userPhotoUrl,
+                radius: 60,
+                isEditable: true,
+                onImageSelected: (File? image) {
+                  setState(() {
+                    _selectedProfileImage = image;
+                  });
+                  // TODO: Handle image upload logic here
+                },
               ),
               const SizedBox(height: 24.0),
               _buildTextField(
@@ -168,12 +169,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  void _saveProfile() {
+  void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: If _selectedProfileImage is not null, upload it first
-      // then update the user profile with the new image URL
-      // TODO: Implement save profile logic
-      context.pop();
+      try {
+        // Show loading indicator
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder:
+              (context) => const Center(child: CircularProgressIndicator()),
+        );
+
+        await context.read<AuthenticationProvider>().updateUserProfile(
+          fullName: _fullNameController.text.trim(),
+          jobTitle: _jobTitleController.text.trim(),
+          phone: _phoneController.text.trim(),
+          department: _departmentController.text.trim(),
+          location: _locationController.text.trim(),
+          profileImage: _selectedProfileImage,
+        );
+
+        // Hide loading indicator
+        if (mounted) Navigator.of(context).pop();
+
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile updated successfully!')),
+          );
+        }
+
+        // Go back to previous screen
+        if (mounted) context.pop();
+      } catch (e) {
+        // Hide loading indicator
+        if (mounted) Navigator.of(context).pop();
+
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error updating profile: $e')));
+        }
+      }
     }
   }
 }

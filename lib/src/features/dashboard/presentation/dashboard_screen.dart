@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 import 'package:teamhub_productivity_suite/src/widgets/responsive_container.dart';
+import 'package:teamhub_productivity_suite/src/providers/authentication_provider.dart';
 import 'package:teamhub_productivity_suite/src/widgets/stat_card.dart';
+import 'package:teamhub_productivity_suite/src/widgets/profile_image_widget.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -98,23 +101,21 @@ class DashboardScreen extends StatelessWidget {
 
   // Welcome section with user greeting
   Widget _buildWelcomeSection(BuildContext context) {
+    final appUser = context.watch<AuthenticationProvider>().appUser;
     return Card(
       elevation: 1,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            const CircleAvatar(
-              radius: 24,
-              backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
-            ),
+            ProfileImageWidget(imageUrl: appUser?.userPhotoUrl, radius: 24.0),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome, User!', // Placeholder
+                    'Welcome, ${appUser!.fullName}!', // Placeholder
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
