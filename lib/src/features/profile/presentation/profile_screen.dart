@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 import 'package:teamhub_productivity_suite/src/providers/authentication_provider.dart';
+import 'package:teamhub_productivity_suite/src/widgets/profile_image_widget.dart';
 import 'package:teamhub_productivity_suite/src/widgets/responsive_container.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -92,54 +93,23 @@ class ProfileScreen extends StatelessWidget {
 
   // Profile header with avatar and name
   Widget _buildProfileHeader(BuildContext context) {
+    final appUser = context.watch<AuthenticationProvider>().appUser;
     return Column(
       children: [
         // Avatar with edit button overlay
-        Stack(
-          children: [
-            const CircleAvatar(
-              radius: 60,
-              backgroundImage: NetworkImage(
-                'https://i.pravatar.cc/300', // Placeholder avatar
-              ),
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.camera_alt,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  onPressed: () {
-                    // TODO: Implement avatar change
-                  },
-                  constraints: const BoxConstraints(
-                    minWidth: 36,
-                    minHeight: 36,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        ProfileImageWidget(imageUrl: appUser?.userPhotoUrl, radius: 60.0),
+
         const SizedBox(height: 16.0),
+
         Text(
-          AppStrings.placeholderUserName,
+          appUser!.fullName,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4.0),
         Text(
-          AppStrings.placeholderJobTitle,
+          appUser?.jobTitle ?? AppStrings.placeholderJobNotSet,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(color: Colors.grey),
@@ -191,38 +161,40 @@ class ProfileScreen extends StatelessWidget {
 
   // Contact information section
   List<Widget> _buildContactInfo(BuildContext context) {
+    final appUser = context.watch<AuthenticationProvider>().appUser;
     return [
       _buildInfoRow(
         context,
         icon: Icons.email_outlined,
         label: 'Email',
-        value: AppStrings.placeholderUserEmail,
+        value: appUser!.email,
       ),
       const SizedBox(height: 16.0),
       _buildInfoRow(
         context,
         icon: Icons.phone_outlined,
         label: 'Phone',
-        value: '+1 234 567 8900', // Placeholder
+        value: appUser!.phone ?? AppStrings.placeholderPhoneNotSet,
       ),
     ];
   }
 
   // Work information section
   List<Widget> _buildWorkInfo(BuildContext context) {
+    final appUser = context.watch<AuthenticationProvider>().appUser;
     return [
       _buildInfoRow(
         context,
         icon: Icons.business_outlined,
         label: 'Department',
-        value: 'Engineering', // Placeholder
+        value: appUser!.department ?? AppStrings.placeholderDepartmentNotSet,
       ),
       const SizedBox(height: 16.0),
       _buildInfoRow(
         context,
         icon: Icons.location_on_outlined,
         label: 'Location',
-        value: 'San Francisco, CA', // Placeholder
+        value: appUser!.location ?? AppStrings.placeholderNoLocation,
       ),
     ];
   }

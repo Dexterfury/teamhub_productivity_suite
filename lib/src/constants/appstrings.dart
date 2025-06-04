@@ -13,6 +13,9 @@ class AppStrings {
   static const String fieldSearchTokens = 'searchTokens';
   static const String fieldAssignedOrganizationId = 'assignedOrganizationId';
   static const String fieldJobTitle = 'jobTitle';
+  static const String fieldPhone = 'phone';
+  static const String fieldDepartment = 'department';
+  static const String fieldLocation = 'location';
   static const String fieldFcmToken = 'fcmToken';
 
   // User Role Fields
@@ -150,6 +153,13 @@ class AppStrings {
   static const String placeholderUserName = 'John Doe';
   static const String placeholderUserEmail = 'john.doe@example.com';
   static const String placeholderJobTitle = 'Software Engineer';
+
+  static const String placeholderJobNotSet = 'Job Title Not Set';
+  static const String placeholderDepartmentNotSet = 'Department Not Set';
+  static const String placeholderPhoneNotSet = 'Phone Not Set';
+  static const String placeholderNoInventoryItems =
+      'No inventory items available. Add new items to get started.';
+  static const placeholderNoLocation = 'Location Not Set';
 
   // Error Messages (Placeholders)
   static const String genericError = 'An unexpected error occurred.';

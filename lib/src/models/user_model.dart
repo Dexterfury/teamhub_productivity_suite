@@ -16,8 +16,10 @@ class UserModel {
   List<String> searchTokens;
   String? assignedOrganizationId; // For multi-tenancy or org structure
   String? jobTitle;
+  String? phone;
+  String? department;
+  String? location;
   String? fcmToken;
-
 
   UserModel({
     required this.uid,
@@ -33,6 +35,9 @@ class UserModel {
     this.searchTokens = const [],
     this.assignedOrganizationId,
     this.jobTitle,
+    this.phone,
+    this.department,
+    this.location,
     this.fcmToken,
   });
 
@@ -43,9 +48,10 @@ class UserModel {
     } else if (map[AppStrings.fieldLastOnline] is Timestamp) {
       lastOnlineDate = (map[AppStrings.fieldLastOnline] as Timestamp).toDate();
     } else if (map[AppStrings.fieldLastOnline] is String) {
-      lastOnlineDate = DateTime.tryParse(map[AppStrings.fieldLastOnline] as String) ?? DateTime.now();
-    }
-    else {
+      lastOnlineDate =
+          DateTime.tryParse(map[AppStrings.fieldLastOnline] as String) ??
+          DateTime.now();
+    } else {
       lastOnlineDate = DateTime.now();
     }
 
@@ -55,9 +61,10 @@ class UserModel {
     } else if (map[AppStrings.fieldCreatedAt] is Timestamp) {
       createdAtDate = (map[AppStrings.fieldCreatedAt] as Timestamp).toDate();
     } else if (map[AppStrings.fieldCreatedAt] is String) {
-      createdAtDate = DateTime.tryParse(map[AppStrings.fieldCreatedAt] as String) ?? DateTime.now();
-    }
-     else {
+      createdAtDate =
+          DateTime.tryParse(map[AppStrings.fieldCreatedAt] as String) ??
+          DateTime.now();
+    } else {
       createdAtDate = DateTime.now();
     }
 
@@ -69,19 +76,24 @@ class UserModel {
       isFirstLogin: map[AppStrings.fieldIsFirstLogin] ?? true,
       createdAt: createdAtDate,
       createdBy: map[AppStrings.fieldCreatedBy],
-      roles: UserRoles.fromMap(map[AppStrings.fieldRoles] as Map<String,dynamic>? ?? {}),
+      roles: UserRoles.fromMap(
+        map[AppStrings.fieldRoles] as Map<String, dynamic>? ?? {},
+      ),
       isOnline: map[AppStrings.fieldIsOnline] ?? false,
       lastOnline: lastOnlineDate,
       searchTokens: List<String>.from(map[AppStrings.fieldSearchTokens] ?? []),
       assignedOrganizationId: map[AppStrings.fieldAssignedOrganizationId],
       jobTitle: map[AppStrings.fieldJobTitle],
+      phone: map[AppStrings.fieldPhone],
+      department: map[AppStrings.fieldDepartment],
       fcmToken: map[AppStrings.fieldFcmToken],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      AppStrings.fieldUid: uid, // Often not stored in the doc itself if uid is doc ID
+      AppStrings.fieldUid:
+          uid, // Often not stored in the doc itself if uid is doc ID
       AppStrings.fieldEmail: email,
       AppStrings.fieldFullName: fullName,
       AppStrings.fieldUserPhotoUrl: userPhotoUrl,
@@ -94,6 +106,9 @@ class UserModel {
       AppStrings.fieldSearchTokens: searchTokens,
       AppStrings.fieldAssignedOrganizationId: assignedOrganizationId,
       AppStrings.fieldJobTitle: jobTitle,
+      AppStrings.fieldPhone: phone,
+      AppStrings.fieldDepartment: department,
+      AppStrings.fieldLocation: location,
       AppStrings.fieldFcmToken: fcmToken,
     };
   }
@@ -112,6 +127,9 @@ class UserModel {
     List<String>? searchTokens,
     String? assignedOrganizationId,
     String? jobTitle,
+    String? phone,
+    String? department,
+    String? location,
     String? fcmToken,
   }) {
     return UserModel(
@@ -126,8 +144,12 @@ class UserModel {
       isOnline: isOnline ?? this.isOnline, // Corrected: was false
       lastOnline: lastOnline ?? this.lastOnline,
       searchTokens: searchTokens ?? this.searchTokens,
-      assignedOrganizationId: assignedOrganizationId ?? this.assignedOrganizationId,
+      assignedOrganizationId:
+          assignedOrganizationId ?? this.assignedOrganizationId,
       jobTitle: jobTitle ?? this.jobTitle,
+      phone: phone ?? this.phone,
+      department: department ?? this.department,
+      location: location ?? this.location,
       fcmToken: fcmToken ?? this.fcmToken,
     );
   }
