@@ -170,6 +170,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
+      // TODO: If _selectedProfileImage is not null, upload it first
+      // then update the user profile with the new image URL
       // TODO: Implement save profile logic
       context.pop();
     }
