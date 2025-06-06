@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 import 'package:teamhub_productivity_suite/src/models/user_model.dart';
 import 'package:teamhub_productivity_suite/src/models/user_roles.dart';
+import 'package:teamhub_productivity_suite/src/services/user_service.dart'; // Added import
 import 'package:teamhub_productivity_suite/src/widgets/responsive_container.dart';
 
 class ManageUsersScreen extends StatefulWidget {
@@ -16,34 +17,9 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   String _searchQuery = '';
   String _selectedRoleFilter = 'All';
   bool _isLoading = false;
+  List<UserModel> _users = []; // Will be populated from Firestore
 
-  // Placeholder user data
-  final List<UserModel> _users = [
-    UserModel(
-      uid: 'user1',
-      email: 'admin@example.com',
-      fullName: 'Admin User',
-      createdAt: DateTime.now().subtract(const Duration(days: 100)),
-      lastOnline: DateTime.now().subtract(const Duration(minutes: 5)),
-      roles: UserRoles(isAdmin: true, isManager: true, canManageUsers: true),
-    ),
-    UserModel(
-      uid: 'user2',
-      email: 'manager@example.com',
-      fullName: 'Manager User',
-      createdAt: DateTime.now().subtract(const Duration(days: 50)),
-      lastOnline: DateTime.now().subtract(const Duration(hours: 2)),
-      roles: UserRoles(isManager: true),
-    ),
-    UserModel(
-      uid: 'user3',
-      email: 'member@example.com',
-      fullName: 'Team Member',
-      createdAt: DateTime.now().subtract(const Duration(days: 10)),
-      lastOnline: DateTime.now().subtract(const Duration(days: 1)),
-      roles: UserRoles(isMember: true),
-    ),
-  ];
+  final UserService _userService = UserService();
 
   List<UserModel> get _filteredUsers {
     return _users.where((user) {
@@ -63,6 +39,39 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _fetchUsers();
+  }
+
+  Future<void> _fetchUsers() async {
+    setState(() => _isLoading = true);
+    try {
+      final fetchedUsers = await _userService.getUsers(
+        roleFilter: _selectedRoleFilter == 'All' ? null : _selectedRoleFilter,
+        searchQuery: _searchQuery,
+      );
+      setState(() {
+        _users = fetchedUsers;
+      });
+    } catch (e) {
+      print('Error fetching users: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading users: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTabletOrLarger = screenWidth >= 600;
@@ -73,10 +82,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
         title: const Text(AppStrings.manageUsersTitle),
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          // TODO: Implement refresh logic to fetch latest users
-          await Future.delayed(const Duration(seconds: 1));
-        },
+        onRefresh: _fetchUsers, // Call _fetchUsers for refresh
         child:
             _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -319,122 +325,148 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                     _buildPermissionCheckbox(
                       AppStrings.canAccessPOS,
                       tempRoles.canAccessPOS,
-                      (value) => setState(
-                        () => tempRoles.canAccessPOS = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canAccessPOS = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canBalanceShifts,
                       tempRoles.canBalanceShifts,
-                      (value) => setState(
-                        () => tempRoles.canBalanceShifts = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canBalanceShifts = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canAccessProcurement,
                       tempRoles.canAccessProcurement,
-                      (value) => setState(
-                        () => tempRoles.canAccessProcurement = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canAccessProcurement = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canAccessAccounting,
                       tempRoles.canAccessAccounting,
-                      (value) => setState(
-                        () => tempRoles.canAccessAccounting = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canAccessAccounting = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canManageCustomersAndSuppliers,
                       tempRoles.canManageCustomersAndSuppliers,
-                      (value) => setState(
-                        () =>
-                            tempRoles.canManageCustomersAndSuppliers =
-                                value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canManageCustomersAndSuppliers =
+                              value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canManageItems,
                       tempRoles.canManageItems,
-                      (value) => setState(
-                        () => tempRoles.canManageItems = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canManageItems = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canManageEquipment,
                       tempRoles.canManageEquipment,
-                      (value) => setState(
-                        () => tempRoles.canManageEquipment = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canManageEquipment = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canProcessRentals,
                       tempRoles.canProcessRentals,
-                      (value) => setState(
-                        () => tempRoles.canProcessRentals = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canProcessRentals = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canPerformStockCount,
                       tempRoles.canPerformStockCount,
-                      (value) => setState(
-                        () => tempRoles.canPerformStockCount = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canPerformStockCount = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canManageUsers,
                       tempRoles.canManageUsers,
-                      (value) => setState(
-                        () => tempRoles.canManageUsers = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canManageUsers = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canManageOrganizations,
                       tempRoles.canManageOrganizations,
-                      (value) => setState(
-                        () => tempRoles.canManageOrganizations = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canManageOrganizations = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canManageSites,
                       tempRoles.canManageSites,
-                      (value) => setState(
-                        () => tempRoles.canManageSites = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canManageSites = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canGenerateInvoices,
                       tempRoles.canGenerateInvoices,
-                      (value) => setState(
-                        () => tempRoles.canGenerateInvoices = value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canGenerateInvoices = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canManageAccountingPeriods,
                       tempRoles.canManageAccountingPeriods,
-                      (value) => setState(
-                        () =>
-                            tempRoles.canManageAccountingPeriods =
-                                value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canManageAccountingPeriods = value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canOverrideRolloverConditions,
                       tempRoles.canOverrideRolloverConditions,
-                      (value) => setState(
-                        () =>
-                            tempRoles.canOverrideRolloverConditions =
-                                value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canOverrideRolloverConditions =
+                              value ?? false;
+                        });
+                      },
                     ),
                     _buildPermissionCheckbox(
                       AppStrings.canPostToSoftClosedPeriod,
                       tempRoles.canPostToSoftClosedPeriod,
-                      (value) => setState(
-                        () =>
-                            tempRoles.canPostToSoftClosedPeriod =
-                                value ?? false,
-                      ),
+                      (value) {
+                        setState(() {
+                          tempRoles.canPostToSoftClosedPeriod = value ?? false;
+                        });
+                      },
                     ),
                   ],
                 ),
@@ -445,20 +477,40 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                   child: const Text(AppStrings.cancelButton),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement actual update logic using UserService
-                    print(
-                      'Updating roles for ${user.fullName} to ${tempRoles.toMap()}',
-                    );
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '${AppStrings.rolesUpdatedFor} ${user.fullName}',
-                        ),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
+                  onPressed: () async {
+                    // Implement actual update logic using UserService
+                    setState(() => _isLoading = true);
+                    try {
+                      await _userService.updateUserRoles(user.uid, tempRoles);
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${AppStrings.rolesUpdatedFor} ${user.fullName}',
+                            ),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                      _fetchUsers(); // Refresh the list after update
+                      Navigator.of(context).pop(); // Close dialog
+                    } catch (e) {
+                      print('Error updating user roles: $e');
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Error updating roles: ${e.toString()}',
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    } finally {
+                      if (mounted) {
+                        setState(() => _isLoading = false);
+                      }
+                    }
                   },
                   child: const Text(AppStrings.saveButton),
                 ),

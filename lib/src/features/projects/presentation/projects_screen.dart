@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart'; // Added import
 import 'package:teamhub_productivity_suite/src/models/project_model.dart';
+import 'package:teamhub_productivity_suite/src/providers/authentication_provider.dart'; // Added import
+import 'package:teamhub_productivity_suite/src/services/project_service.dart'; // Added import
 import 'package:teamhub_productivity_suite/src/widgets/responsive_container.dart';
 
 class ProjectsListScreen extends StatefulWidget {
@@ -12,42 +15,17 @@ class ProjectsListScreen extends StatefulWidget {
 
 class _ProjectsListScreenState extends State<ProjectsListScreen> {
   String _searchQuery = '';
-  String _selectedFilter = 'All';
+  ProjectFilter _selectedFilter = ProjectFilter.all; // Changed to enum
   bool _isLoading = false;
+  List<ProjectModel> _projects = []; // Will be populated from Firestore
 
-  // Placeholder projects data
-  final List<ProjectModel> _projects = [
-    ProjectModel(
-      projectId: '1',
-      projectName: 'TeamHub Mobile App',
-      projectDescription:
-          'Development of the TeamHub mobile application with Flutter.',
-      memberIds: ['user1', 'user2', 'user3'],
-      createdById: 'user1',
-      createdAt: DateTime.now().subtract(const Duration(days: 30)),
-    ),
-    ProjectModel(
-      projectId: '2',
-      projectName: 'Website Redesign',
-      projectDescription:
-          'Redesign of the company website with modern UI/UX principles.',
-      memberIds: ['user1', 'user4'],
-      createdById: 'user1',
-      createdAt: DateTime.now().subtract(const Duration(days: 15)),
-    ),
-    ProjectModel(
-      projectId: '3',
-      projectName: 'Inventory Management System',
-      projectDescription:
-          'Development of an inventory tracking and management system.',
-      memberIds: ['user2', 'user3', 'user5'],
-      createdById: 'user2',
-      createdAt: DateTime.now().subtract(const Duration(days: 7)),
-    ),
-  ];
+  final ProjectService _projectService = ProjectService();
 
   // Filtered projects based on search and filter
   List<ProjectModel> get filteredProjects {
+    final authProvider = context.read<AuthenticationProvider>();
+    final currentUserId = authProvider.appUser?.uid;
+
     return _projects.where((project) {
       final matchesSearch =
           _searchQuery.isEmpty ||
@@ -58,17 +36,60 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
             _searchQuery.toLowerCase(),
           );
 
-      // Apply filters (placeholder logic)
       final matchesFilter =
-          _selectedFilter == 'All' ||
-          (_selectedFilter == 'Recent' &&
+          _selectedFilter == ProjectFilter.all ||
+          (_selectedFilter == ProjectFilter.recent &&
               project.createdAt.isAfter(
                 DateTime.now().subtract(const Duration(days: 14)),
               )) ||
-          (_selectedFilter == 'My Projects' && project.createdById == 'user1');
+          (_selectedFilter == ProjectFilter.myProjects &&
+              project.createdById == currentUserId);
 
       return matchesSearch && matchesFilter;
     }).toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProjects();
+  }
+
+  Future<void> _fetchProjects() async {
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = context.read<AuthenticationProvider>();
+      final currentUserId = authProvider.appUser?.uid;
+
+      if (currentUserId == null) {
+        // Handle unauthenticated user, maybe navigate to login
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      final fetchedProjects = await _projectService.getProjects(
+        currentUserId: currentUserId,
+        filter: _selectedFilter,
+        searchQuery: _searchQuery,
+      );
+      setState(() {
+        _projects = fetchedProjects;
+      });
+    } catch (e) {
+      print('Error fetching projects: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading projects: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -95,10 +116,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          // TODO: Implement refresh logic
-          await Future.delayed(const Duration(seconds: 1));
-        },
+        onRefresh: _fetchProjects, // Call _fetchProjects for refresh
         child:
             _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -132,12 +150,19 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
                   ),
                 ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'projectsListFAB', // Add unique heroTag
-        onPressed: () => context.go('/projects/new'),
-        icon: const Icon(Icons.add),
-        label: const Text('New Project'),
-        tooltip: 'Create new project',
+      floatingActionButton: Consumer<AuthenticationProvider>(
+        builder: (context, authProvider, child) {
+          final isAdmin = authProvider.appUser?.roles.isAdmin ?? false;
+          return isAdmin
+              ? FloatingActionButton.extended(
+                heroTag: 'projectsListFAB', // Add unique heroTag
+                onPressed: () => context.go('/projects/new'),
+                icon: const Icon(Icons.add),
+                label: const Text('New Project'),
+                tooltip: 'Create new project',
+              )
+              : const SizedBox.shrink(); // Hide FAB if not admin
+        },
       ),
     );
   }
@@ -188,12 +213,32 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
 
   // Individual filter chip
   Widget _buildFilterChip(String label, IconData icon) {
-    final isSelected = _selectedFilter == label;
+    ProjectFilter filterValue;
+    switch (label) {
+      case 'All':
+        filterValue = ProjectFilter.all;
+        break;
+      case 'Recent':
+        filterValue = ProjectFilter.recent;
+        break;
+      case 'My Projects':
+        filterValue = ProjectFilter.myProjects;
+        break;
+      default:
+        filterValue = ProjectFilter.all;
+    }
+
+    final isSelected = _selectedFilter == filterValue;
     return FilterChip(
       selected: isSelected,
       label: Text(label),
       avatar: Icon(icon, size: 18),
-      onSelected: (selected) => setState(() => _selectedFilter = label),
+      onSelected: (selected) {
+        setState(() {
+          _selectedFilter = filterValue;
+          _fetchProjects(); // Fetch projects when filter changes
+        });
+      },
       showCheckmark: false,
       backgroundColor: Theme.of(context).chipTheme.backgroundColor,
       selectedColor: Theme.of(context).primaryColor.withOpacity(0.1),
@@ -374,6 +419,10 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
 
   // Project card for grid layout
   Widget _buildProjectCard(BuildContext context, ProjectModel project) {
+    final authProvider = context.read<AuthenticationProvider>();
+    final currentUserId = authProvider.appUser?.uid;
+    final isCreator = project.createdById == currentUserId;
+
     return Card(
       elevation: 2,
       child: InkWell(
@@ -398,41 +447,46 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
                     ),
                   ),
                   const Spacer(),
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        context.go('/projects/${project.projectId}/edit');
-                      } else if (value == 'delete') {
-                        _showDeleteConfirmation(context, project);
-                      }
-                    },
-                    itemBuilder:
-                        (BuildContext context) => [
-                          const PopupMenuItem<String>(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit, size: 20),
-                                SizedBox(width: 8),
-                                Text('Edit'),
-                              ],
+                  if (isCreator)
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          context.go('/projects/${project.projectId}/edit');
+                        } else if (value == 'delete') {
+                          _showDeleteConfirmation(context, project);
+                        }
+                      },
+                      itemBuilder:
+                          (BuildContext context) => [
+                            const PopupMenuItem<String>(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Edit'),
+                                ],
+                              ),
                             ),
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, color: Colors.red, size: 20),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ],
+                            const PopupMenuItem<String>(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                  ),
+                          ],
+                    ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -476,6 +530,10 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
 
   // Project list item for mobile layout
   Widget _buildProjectListItem(BuildContext context, ProjectModel project) {
+    final authProvider = context.read<AuthenticationProvider>();
+    final currentUserId = authProvider.appUser?.uid;
+    final isCreator = project.createdById == currentUserId;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12.0),
       child: InkWell(
@@ -533,41 +591,46 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
                       ],
                     ),
                   ),
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        context.go('/projects/${project.projectId}/edit');
-                      } else if (value == 'delete') {
-                        _showDeleteConfirmation(context, project);
-                      }
-                    },
-                    itemBuilder:
-                        (BuildContext context) => [
-                          const PopupMenuItem<String>(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit, size: 20),
-                                SizedBox(width: 8),
-                                Text('Edit'),
-                              ],
+                  if (isCreator)
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          context.go('/projects/${project.projectId}/edit');
+                        } else if (value == 'delete') {
+                          _showDeleteConfirmation(context, project);
+                        }
+                      },
+                      itemBuilder:
+                          (BuildContext context) => [
+                            const PopupMenuItem<String>(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Edit'),
+                                ],
+                              ),
                             ),
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, color: Colors.red, size: 20),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ],
+                            const PopupMenuItem<String>(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                  ),
+                          ],
+                    ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -699,27 +762,36 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
               ListTile(
                 leading: const Icon(Icons.folder_outlined),
                 title: const Text('All Projects'),
-                selected: _selectedFilter == 'All',
+                selected: _selectedFilter == ProjectFilter.all,
                 onTap: () {
-                  setState(() => _selectedFilter = 'All');
+                  setState(() {
+                    _selectedFilter = ProjectFilter.all;
+                    _fetchProjects();
+                  });
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.access_time),
                 title: const Text('Recent Projects'),
-                selected: _selectedFilter == 'Recent',
+                selected: _selectedFilter == ProjectFilter.recent,
                 onTap: () {
-                  setState(() => _selectedFilter = 'Recent');
+                  setState(() {
+                    _selectedFilter = ProjectFilter.recent;
+                    _fetchProjects();
+                  });
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.person_outline),
                 title: const Text('My Projects'),
-                selected: _selectedFilter == 'My Projects',
+                selected: _selectedFilter == ProjectFilter.myProjects,
                 onTap: () {
-                  setState(() => _selectedFilter = 'My Projects');
+                  setState(() {
+                    _selectedFilter = ProjectFilter.myProjects;
+                    _fetchProjects();
+                  });
                   Navigator.pop(context);
                 },
               ),
@@ -823,31 +895,40 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                // TODO: Implement actual delete logic
-                setState(() {
-                  _projects.removeWhere(
-                    (p) => p.projectId == project.projectId,
-                  );
-                });
-                Navigator.of(context).pop();
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close dialog first
+                setState(() => _isLoading = true); // Show loading indicator
 
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Project "${project.projectName}" deleted'),
-                    backgroundColor: Colors.green,
-                    action: SnackBarAction(
-                      label: 'Undo',
-                      onPressed: () {
-                        // TODO: Implement undo logic
-                        setState(() {
-                          _projects.add(project);
-                        });
-                      },
-                    ),
-                  ),
-                );
+                try {
+                  await _projectService.deleteProject(project.projectId);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Project "${project.projectName}" deleted',
+                        ),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                  _fetchProjects(); // Refresh the list after deletion
+                } catch (e) {
+                  print('Error deleting project: $e');
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Error deleting project: ${e.toString()}',
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                } finally {
+                  if (mounted) {
+                    setState(() => _isLoading = false);
+                  }
+                }
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Delete'),
