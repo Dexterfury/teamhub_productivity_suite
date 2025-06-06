@@ -26,6 +26,29 @@ class UserService {
     }
   }
 
+  /// Gets all users from Firestore (for team member selection)
+  /// Consider adding pagination for large user bases
+  Future<List<UserModel>> getAllUsers({int limit = 100}) async {
+    try {
+      QuerySnapshot snapshot =
+          await _firestore
+              .collection(AppStrings.collectionUsers)
+              .orderBy(AppStrings.fieldFullName)
+              .limit(limit)
+              .get();
+
+      return snapshot.docs
+          .map(
+            (doc) =>
+                UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+          )
+          .toList();
+    } catch (e) {
+      print("Error fetching all users: $e");
+      return [];
+    }
+  }
+
   /// Fetches a list of users from Firestore, with optional filtering and searching.
   ///
   /// [roleFilter]: Optional. Filters users by a specific role ('Admin', 'Manager', 'Member').

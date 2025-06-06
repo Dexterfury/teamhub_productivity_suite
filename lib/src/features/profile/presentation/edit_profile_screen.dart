@@ -95,7 +95,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   setState(() {
                     _selectedProfileImage = image;
                   });
-                  // TODO: Handle image upload logic here
                 },
               ),
               const SizedBox(height: 24.0),

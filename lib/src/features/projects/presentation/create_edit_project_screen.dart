@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
+import 'package:teamhub_productivity_suite/src/models/project_model.dart';
+import 'package:teamhub_productivity_suite/src/models/user_model.dart';
+import 'package:teamhub_productivity_suite/src/providers/authentication_provider.dart';
+import 'package:teamhub_productivity_suite/src/services/project_service.dart';
+import 'package:teamhub_productivity_suite/src/services/user_service.dart';
 import 'package:teamhub_productivity_suite/src/widgets/inputfield.dart';
 import 'package:teamhub_productivity_suite/src/widgets/responsive_container.dart';
 
@@ -22,15 +28,14 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
   late TextEditingController _descriptionController;
   bool _isLoading = false;
 
-  // Placeholder for selected members
-  final List<Map<String, dynamic>> _selectedMembers = [
-    {
-      'id': 'user1',
-      'name': 'John Doe',
-      'avatar': 'https://i.pravatar.cc/150?img=1',
-      'role': 'Project Manager',
-    },
-  ];
+  // Services
+  final ProjectService _projectService = ProjectService();
+  final UserService _userService = UserService();
+
+  // Real data instead of dummy data
+  List<UserModel> _selectedMembers = [];
+  List<UserModel> _availableMembers = [];
+  ProjectModel? _existingProject;
 
   @override
   void initState() {
@@ -43,27 +48,140 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
       text: widget.isEditing ? AppStrings.placeholderProjectDescription : '',
     );
 
-    // TODO: Fetch project details if editing
+    // Load initial data for editing or creating a project
+    _loadInitialData();
   }
 
-  @override
-  void dispose() {
-    // Clean up controllers when the widget is disposed
-    _nameController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
+  // Load initial data for editing or creating
+  Future<void> _loadInitialData() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final authProvider = context.read<AuthenticationProvider>();
+      final currentUser = authProvider.appUser;
+
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Always add current user as first member
+      _selectedMembers = [currentUser];
+
+      if (widget.isEditing && widget.projectId != null) {
+        // Load existing project data
+        _existingProject = await _projectService.getProject(widget.projectId!);
+
+        if (_existingProject != null) {
+          // Populate form fields
+          _nameController.text = _existingProject!.projectName;
+          _descriptionController.text = _existingProject!.projectDescription;
+
+          // Load project members (excluding current user since already added)
+          final memberUsers = await _loadProjectMembers(
+            _existingProject!.memberIds,
+          );
+          _selectedMembers = [
+            currentUser, // Current user always first
+            ...memberUsers.where((user) => user.uid != currentUser.uid),
+          ];
+        }
+      }
+
+      // Load available members for adding to project
+      await _loadAvailableMembers();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading data: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
-  // Save project
+  // Load project members from Firestore
+  Future<List<UserModel>> _loadProjectMembers(List<String> memberIds) async {
+    final List<UserModel> members = [];
+
+    for (final memberId in memberIds) {
+      final user = await _userService.getUser(memberId);
+      if (user != null) {
+        members.add(user);
+      }
+    }
+
+    return members;
+  }
+
+  // Load available users that can be added to the project
+  Future<void> _loadAvailableMembers() async {
+    try {
+      // Get all users from UserService (you might need to implement this method)
+      final allUsers = await _userService.getAllUsers();
+
+      // Filter out already selected members
+      _availableMembers =
+          allUsers.where((user) {
+            return !_selectedMembers.any(
+              (selected) => selected.uid == user.uid,
+            );
+          }).toList();
+    } catch (e) {
+      print('Error loading available members: $e');
+      _availableMembers = [];
+    }
+  }
+
+  // Updated save project method with real Firestore integration
   Future<void> _saveProject() async {
-    // Validate form first
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
-      // Simulate saving to backend
-      await Future.delayed(const Duration(seconds: 1));
+      final authProvider = Provider.of<AuthenticationProvider>(
+        context,
+        listen: false,
+      );
+      final currentUser = authProvider.appUser;
+
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final memberIds = _selectedMembers.map((member) => member.uid).toList();
+
+      if (widget.isEditing && widget.projectId != null) {
+        // Update existing project
+        final updatedProject = ProjectModel(
+          projectId: widget.projectId!,
+          projectName: _nameController.text.trim(),
+          projectDescription: _descriptionController.text.trim(),
+          memberIds: memberIds,
+          createdById: _existingProject?.createdById ?? currentUser.uid,
+          createdAt: _existingProject?.createdAt ?? DateTime.now(),
+        );
+
+        await _projectService.updateProject(updatedProject);
+      } else {
+        // Create new project
+        final newProject = ProjectModel(
+          projectId: DateTime.now().millisecondsSinceEpoch.toString(),
+          projectName: _nameController.text.trim(),
+          projectDescription: _descriptionController.text.trim(),
+          memberIds: memberIds,
+          createdById: currentUser.uid,
+          createdAt: DateTime.now(),
+        );
+
+        await _projectService.createProject(newProject);
+      }
 
       if (!mounted) return;
 
@@ -79,7 +197,7 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
         ),
       );
 
-      // Navigate back to projects list or project details
+      // Navigate back
       if (widget.isEditing) {
         context.go('/projects/${widget.projectId}');
       } else {
@@ -87,10 +205,9 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppStrings.genericError),
+          content: Text('Error saving project: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -99,6 +216,14 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  @override
+  void dispose() {
+    // Clean up controllers when the widget is disposed
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -233,7 +358,7 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
     );
   }
 
-  // Team members section with member selection
+  // Updated team members section with real data
   Widget _buildTeamMembersSection(BuildContext context) {
     return Card(
       elevation: 1,
@@ -279,14 +404,6 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
                           context,
                         ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Click "Add Members" to add team members to this project',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
                     ],
                   ),
                 ),
@@ -298,33 +415,69 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
                 itemCount: _selectedMembers.length,
                 itemBuilder: (context, index) {
                   final member = _selectedMembers[index];
+                  final isCurrentUser =
+                      index == 0; // First member is always current user
+
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: NetworkImage(member['avatar']),
+                      backgroundImage:
+                          member.userPhotoUrl != null
+                              ? NetworkImage(member.userPhotoUrl!)
+                              : null,
+                      child:
+                          member.userPhotoUrl == null
+                              ? Text(
+                                member.fullName.isNotEmpty
+                                    ? member.fullName[0].toUpperCase()
+                                    : 'U',
+                              )
+                              : null,
                     ),
-                    title: Text(member['name']),
-                    subtitle: Text(member['role']),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.remove_circle_outline),
-                      color: Colors.red,
-                      onPressed: () {
-                        // Don't allow removing the last member
-                        if (_selectedMembers.length > 1) {
-                          setState(() {
-                            _selectedMembers.removeAt(index);
-                          });
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Project must have at least one member',
+                    title: Row(
+                      children: [
+                        Text(member.fullName),
+                        if (isCurrentUser) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.blue.withOpacity(0.3),
                               ),
                             ),
-                          );
-                        }
-                      },
-                      tooltip: 'Remove member',
+                            child: const Text(
+                              'You',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
+                    subtitle: Text(member.jobTitle ?? member.email),
+                    trailing:
+                        isCurrentUser
+                            ? null // Don't show remove button for current user
+                            : IconButton(
+                              icon: const Icon(Icons.remove_circle_outline),
+                              color: Colors.red,
+                              onPressed: () {
+                                setState(() {
+                                  _selectedMembers.removeAt(index);
+                                });
+                                // Refresh available members
+                                _loadAvailableMembers();
+                              },
+                              tooltip: 'Remove member',
+                            ),
                   );
                 },
               ),
@@ -430,38 +583,8 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
     }
   }
 
-  // Show dialog to add team members
+  // Updated add members dialog with real data
   void _showAddMembersDialog(BuildContext context) {
-    // Placeholder list of available team members
-    final availableMembers = [
-      {
-        'id': 'user2',
-        'name': 'Jane Smith',
-        'avatar': 'https://i.pravatar.cc/150?img=2',
-        'role': 'Developer',
-      },
-      {
-        'id': 'user3',
-        'name': 'Robert Johnson',
-        'avatar': 'https://i.pravatar.cc/150?img=3',
-        'role': 'Designer',
-      },
-      {
-        'id': 'user4',
-        'name': 'Emily Davis',
-        'avatar': 'https://i.pravatar.cc/150?img=4',
-        'role': 'QA Engineer',
-      },
-    ];
-
-    // Filter out already selected members
-    final filteredMembers =
-        availableMembers.where((member) {
-          return !_selectedMembers.any(
-            (selected) => selected['id'] == member['id'],
-          );
-        }).toList();
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -470,7 +593,7 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
           content: SizedBox(
             width: double.maxFinite,
             child:
-                filteredMembers.isEmpty
+                _availableMembers.isEmpty
                     ? const Center(
                       child: Padding(
                         padding: EdgeInsets.all(16.0),
@@ -479,17 +602,26 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
                     )
                     : ListView.builder(
                       shrinkWrap: true,
-                      itemCount: filteredMembers.length,
+                      itemCount: _availableMembers.length,
                       itemBuilder: (context, index) {
-                        final member = filteredMembers[index];
+                        final member = _availableMembers[index];
                         return ListTile(
                           leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              member['avatar'] ?? '',
-                            ),
+                            backgroundImage:
+                                member.userPhotoUrl != null
+                                    ? NetworkImage(member.userPhotoUrl!)
+                                    : null,
+                            child:
+                                member.userPhotoUrl == null
+                                    ? Text(
+                                      member.fullName.isNotEmpty
+                                          ? member.fullName[0].toUpperCase()
+                                          : 'U',
+                                    )
+                                    : null,
                           ),
-                          title: Text(member['name'] ?? ''),
-                          subtitle: Text(member['role'] ?? ''),
+                          title: Text(member.fullName),
+                          subtitle: Text(member.jobTitle ?? member.email),
                           trailing: IconButton(
                             icon: const Icon(Icons.add_circle_outline),
                             color: Colors.green,
@@ -497,6 +629,8 @@ class _CreateEditProjectScreenState extends State<CreateEditProjectScreen> {
                               setState(() {
                                 _selectedMembers.add(member);
                               });
+                              // Refresh available members
+                              _loadAvailableMembers();
                               Navigator.of(context).pop();
                             },
                             tooltip: 'Add member',

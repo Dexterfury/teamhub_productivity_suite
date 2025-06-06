@@ -66,7 +66,7 @@ class ProjectModel {
       AppStrings.fieldMemberIds: memberIds,
       AppStrings.fieldCreatedBy: createdById,
       AppStrings.fieldCreatedAt: Timestamp.fromDate(createdAt),
-      AppStrings.fieldProjectStatus: status.toString(),
+      AppStrings.fieldProjectStatus: status.name.toString(),
       AppStrings.fieldSearchTokens: searchTokens,
     };
   }
