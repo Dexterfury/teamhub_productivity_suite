@@ -29,7 +29,9 @@ class InventoryItemModel {
     } else if (map[AppStrings.fieldCreatedAt] is Timestamp) {
       createdAtDate = (map[AppStrings.fieldCreatedAt] as Timestamp).toDate();
     } else if (map[AppStrings.fieldCreatedAt] is String) {
-      createdAtDate = DateTime.tryParse(map[AppStrings.fieldCreatedAt] as String) ?? DateTime.now();
+      createdAtDate =
+          DateTime.tryParse(map[AppStrings.fieldCreatedAt] as String) ??
+          DateTime.now();
     } else {
       createdAtDate = DateTime.now();
     }
@@ -41,7 +43,7 @@ class InventoryItemModel {
       quantity: map[AppStrings.fieldQuantity] ?? 0,
       category: map[AppStrings.fieldCategory] ?? '',
       supplier: map[AppStrings.fieldSupplier],
-      createdById: map[AppStrings.fieldCreatedBy] ?? '',
+      createdById: map[AppStrings.fieldCreatedById] ?? '',
       createdAt: createdAtDate,
     );
   }
@@ -54,7 +56,7 @@ class InventoryItemModel {
       AppStrings.fieldQuantity: quantity,
       AppStrings.fieldCategory: category,
       AppStrings.fieldSupplier: supplier,
-      AppStrings.fieldCreatedBy: createdById,
+      AppStrings.fieldCreatedById: createdById,
       AppStrings.fieldCreatedAt: Timestamp.fromDate(createdAt),
     };
   }

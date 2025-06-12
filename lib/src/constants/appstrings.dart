@@ -7,6 +7,7 @@ class AppStrings {
   static const String fieldIsFirstLogin = 'isFirstLogin';
   static const String fieldCreatedAt = 'createdAt';
   static const String fieldCreatedBy = 'createdBy';
+  static const String fieldCreatedById = 'createdById';
   static const String fieldRoles = 'roles';
   static const String fieldIsOnline = 'isOnline';
   static const String fieldLastOnline = 'lastOnline';
@@ -170,6 +171,9 @@ class AppStrings {
   static const String passwordsDoNotMatchError = 'Passwords do not match.';
   static const String requiredFieldError = 'This field is required.';
 
+  static const String taskCreatedSuccessfully = 'Task created successfully!';
+  static const String taskUpdatedSuccessfully = 'Task updated successfully!';
+
   // Firestore collections
   static const String collectionUsers = 'users';
   static const String collectionProjects = 'projects';
@@ -180,6 +184,7 @@ class AppStrings {
   static const String manageUsersTitle = 'Manage Users';
   static const String searchUsersHint = 'Search users by name or email...';
   static const String noUsersFound = 'No users found';
+  static const String noTasksFound = 'No tasks found.';
   static const String tryDifferentSearchTerm = 'Try a different search term';
   static const String tryDifferentFilter = 'Try a different role filter';
   static const String noUsersMessage =

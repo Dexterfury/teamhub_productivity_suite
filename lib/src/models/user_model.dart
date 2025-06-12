@@ -9,7 +9,8 @@ class UserModel {
   final String? userPhotoUrl;
   final bool isFirstLogin;
   final DateTime createdAt;
-  final String? createdBy; // UID of user who created this user (e.g., an admin)
+  final String?
+  createdById; // UID of user who created this user (e.g., an admin)
   UserRoles roles; // Made mutable for easier updates in course examples
   bool isOnline;
   DateTime lastOnline;
@@ -28,7 +29,7 @@ class UserModel {
     this.userPhotoUrl,
     this.isFirstLogin = true,
     required this.createdAt,
-    this.createdBy,
+    this.createdById,
     required this.roles,
     this.isOnline = false,
     required this.lastOnline,
@@ -75,7 +76,7 @@ class UserModel {
       userPhotoUrl: map[AppStrings.fieldUserPhotoUrl],
       isFirstLogin: map[AppStrings.fieldIsFirstLogin] ?? true,
       createdAt: createdAtDate,
-      createdBy: map[AppStrings.fieldCreatedBy],
+      createdById: map[AppStrings.fieldCreatedById],
       roles: UserRoles.fromMap(
         map[AppStrings.fieldRoles] as Map<String, dynamic>? ?? {},
       ),
@@ -99,7 +100,7 @@ class UserModel {
       AppStrings.fieldUserPhotoUrl: userPhotoUrl,
       AppStrings.fieldIsFirstLogin: isFirstLogin,
       AppStrings.fieldCreatedAt: Timestamp.fromDate(createdAt),
-      AppStrings.fieldCreatedBy: createdBy,
+      AppStrings.fieldCreatedById: createdById,
       AppStrings.fieldRoles: roles.toMap(),
       AppStrings.fieldIsOnline: isOnline,
       AppStrings.fieldLastOnline: Timestamp.fromDate(lastOnline),
@@ -120,7 +121,7 @@ class UserModel {
     String? userPhotoUrl,
     bool? isFirstLogin,
     DateTime? createdAt,
-    String? createdBy,
+    String? createdById,
     UserRoles? roles,
     bool? isOnline,
     DateTime? lastOnline,
@@ -139,7 +140,8 @@ class UserModel {
       userPhotoUrl: userPhotoUrl ?? this.userPhotoUrl,
       isFirstLogin: isFirstLogin ?? this.isFirstLogin,
       createdAt: createdAt ?? this.createdAt,
-      createdBy: createdBy ?? this.createdBy, // Keep original if not provided
+      createdById:
+          createdById ?? this.createdById, // Keep original if not provided
       roles: roles ?? this.roles,
       isOnline: isOnline ?? this.isOnline, // Corrected: was false
       lastOnline: lastOnline ?? this.lastOnline,

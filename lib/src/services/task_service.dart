@@ -30,6 +30,7 @@ class TaskService {
   Future<List<TaskModel>> getTasks({
     String? projectId,
     String? assigneeId,
+    String? createdById,
     String? status,
     String? searchQuery,
   }) async {
@@ -44,6 +45,9 @@ class TaskService {
       }
       if (assigneeId != null && assigneeId.isNotEmpty) {
         query = query.where(AppStrings.fieldAssigneeId, isEqualTo: assigneeId);
+      }
+      if (createdById != null && createdById.isNotEmpty) {
+        query = query.where(AppStrings.fieldCreatedBy, isEqualTo: createdById);
       }
       if (status != null && status.isNotEmpty && status != 'All') {
         query = query.where(AppStrings.fieldStatus, isEqualTo: status);

@@ -108,6 +108,44 @@ class UserService {
     }
   }
 
+  /// Fetches a list of users by their UIDs.
+  Future<List<UserModel>> getUsersByIds(List<String> uids) async {
+    if (uids.isEmpty) {
+      return [];
+    }
+    try {
+      // Firestore 'whereIn' clause has a limit of 10 UIDs
+      // For more than 10, multiple queries or a Cloud Function would be needed.
+      // For this example, we'll assume a small number of members or handle in batches.
+      final List<UserModel> users = [];
+      for (int i = 0; i < uids.length; i += 10) {
+        final batchUids = uids.sublist(
+          i,
+          i + 10 > uids.length ? uids.length : i + 10,
+        );
+        QuerySnapshot snapshot =
+            await _firestore
+                .collection(AppStrings.collectionUsers)
+                .where(FieldPath.documentId, whereIn: batchUids)
+                .get();
+        users.addAll(
+          snapshot.docs
+              .map(
+                (doc) => UserModel.fromMap(
+                  doc.data() as Map<String, dynamic>,
+                  doc.id,
+                ),
+              )
+              .toList(),
+        );
+      }
+      return users;
+    } catch (e) {
+      print("Error fetching users by IDs: $e");
+      return [];
+    }
+  }
+
   /// Updates the roles of a specific user in Firestore.
   Future<void> updateUserRoles(String uid, UserRoles roles) async {
     try {

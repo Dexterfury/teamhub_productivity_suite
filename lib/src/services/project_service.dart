@@ -62,7 +62,7 @@ class ProjectService {
         case ProjectFilter.myProjects:
           // Show projects created by currentUserId
           query = query.where(
-            AppStrings.fieldCreatedBy,
+            AppStrings.fieldCreatedById,
             isEqualTo: currentUserId,
           );
           break;
@@ -127,7 +127,10 @@ class ProjectService {
       Query<Object?> query = _projectsCollection;
 
       if (createdById != null && createdById.isNotEmpty) {
-        query = query.where(AppStrings.fieldCreatedBy, isEqualTo: createdById);
+        query = query.where(
+          AppStrings.fieldCreatedById,
+          isEqualTo: createdById,
+        );
       }
 
       // If we have search tokens in Firestore, we can use array-contains-any for better performance

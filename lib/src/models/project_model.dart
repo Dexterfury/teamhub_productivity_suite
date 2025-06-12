@@ -47,7 +47,7 @@ class ProjectModel {
       projectName: map[AppStrings.fieldProjectName] ?? '',
       projectDescription: map[AppStrings.fieldProjectDescription] ?? '',
       memberIds: List<String>.from(map[AppStrings.fieldMemberIds] ?? []),
-      createdById: map[AppStrings.fieldCreatedBy] ?? '',
+      createdById: map[AppStrings.fieldCreatedById] ?? '',
       createdAt: createdAt,
       status: ProjectStatus.values.firstWhere(
         (e) => e.toString() == map[AppStrings.fieldProjectStatus],
@@ -64,7 +64,7 @@ class ProjectModel {
       AppStrings.fieldProjectName: projectName,
       AppStrings.fieldProjectDescription: projectDescription,
       AppStrings.fieldMemberIds: memberIds,
-      AppStrings.fieldCreatedBy: createdById,
+      AppStrings.fieldCreatedById: createdById,
       AppStrings.fieldCreatedAt: Timestamp.fromDate(createdAt),
       AppStrings.fieldProjectStatus: status.name.toString(),
       AppStrings.fieldSearchTokens: searchTokens,
