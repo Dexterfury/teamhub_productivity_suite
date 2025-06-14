@@ -184,6 +184,10 @@ class AppStrings {
   static const String searchUsersHint = 'Search users by name or email...';
   static const String noUsersFound = 'No users found';
   static const String noTasksFound = 'No tasks found.';
+  static const String unassigned = 'Unassigned';
+  static const String viewDetails = 'View Details';
+  static const String editTask = 'Edit Task';
+  static const String changeStatus = 'Change Status';
   static const String tryDifferentSearchTerm = 'Try a different search term';
   static const String tryDifferentFilter = 'Try a different role filter';
   static const String noUsersMessage =

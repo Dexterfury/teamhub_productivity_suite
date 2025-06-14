@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:teamhub_productivity_suite/src/constants/appstrings.dart';
 import 'package:teamhub_productivity_suite/src/models/task_model.dart';
-import 'package:teamhub_productivity_suite/src/models/user_model.dart';
+import 'package:teamhub_productivity_suite/src/models/user_model.dart'; // Added
 import 'package:teamhub_productivity_suite/src/providers/authentication_provider.dart';
 import 'package:teamhub_productivity_suite/src/services/task_service.dart';
-import 'package:teamhub_productivity_suite/src/services/user_service.dart';
-import 'package:teamhub_productivity_suite/src/widgets/task_item.dart';
+import 'package:teamhub_productivity_suite/src/services/user_service.dart'; // Added
+import 'package:teamhub_productivity_suite/src/features/dashboard/presentation/task_item_card.dart'; // Added
 
 class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
@@ -17,10 +17,9 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
-  late Future<List<TaskModel>> _tasksFuture;
+  late Future<List<Map<String, dynamic>>> _tasksFuture; // Changed type
   final TaskService _taskService = TaskService();
-  final UserService _userService = UserService();
-  Map<String, UserModel> _usersCache = {};
+  final UserService _userService = UserService(); // Added
 
   @override
   void initState() {
@@ -28,7 +27,7 @@ class _TasksScreenState extends State<TasksScreen> {
     _fetchTasks();
   }
 
-  void _fetchTasks() {
+  Future<void> _fetchTasks() async {
     final authProvider = Provider.of<AuthenticationProvider>(
       context,
       listen: false,
@@ -46,33 +45,37 @@ class _TasksScreenState extends State<TasksScreen> {
         for (var task in allTasks) {
           uniqueTasks[task.taskId] = task;
         }
+        final filteredTasks = uniqueTasks.values.toList();
 
-        // load user for assignees
-        final assigneeIds =
-            uniqueTasks.values.map((task) => task.assigneeId).toSet().toList();
-
-        if (assigneeIds.isNotEmpty) {
-          final users = await _userService.getUsersByIds(assigneeIds);
-
-          // Cache users to avoid multiple calls
-          _usersCache.clear();
-          for (var user in users) {
-            _usersCache[user.uid] = user;
+        // Collect all unique user IDs (assignees and creators)
+        final Set<String> userIds = {};
+        for (var task in filteredTasks) {
+          userIds.add(task.assigneeId);
+          if (task.createdById != null) {
+            userIds.add(task.createdById!);
           }
         }
 
-        return uniqueTasks.values.toList();
+        // Fetch all unique users
+        final List<UserModel> users = await _userService.getUsersByIds(
+          userIds.toList(),
+        );
+        final Map<String, UserModel> userMap = {
+          for (var user in users) user.uid: user,
+        };
+
+        // Combine tasks with their assignee and creator user models
+        return filteredTasks.map((task) {
+          return {
+            'task': task,
+            'assignee': userMap[task.assigneeId],
+            'creator': userMap[task.createdById],
+          };
+        }).toList();
       });
     } else {
       _tasksFuture = Future.value([]);
     }
-  }
-
-  void _ontaskUpdated() {
-    // Refresh tasks when a task is updated
-    setState(() {
-      _fetchTasks();
-    });
   }
 
   @override
@@ -83,7 +86,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.tasksTitle)),
-      body: FutureBuilder<List<TaskModel>>(
+      body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _tasksFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -93,53 +96,47 @@ class _TasksScreenState extends State<TasksScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text(AppStrings.noTasksFound));
           } else {
-            final tasks = snapshot.data!;
-            // Filter tasks where current user is creator or assignee
-            final filteredTasks =
-                tasks.where((task) {
-                  return task.assigneeId == currentUser?.uid ||
-                      task.createdById == currentUser?.uid;
-                }).toList();
+            final tasksWithUsers = snapshot.data!;
 
-            if (filteredTasks.isEmpty) {
+            if (tasksWithUsers.isEmpty) {
               return const Center(child: Text(AppStrings.noTasksFound));
             }
 
-            // Sort tasks: overdue first, then by due date, then by status
-            filteredTasks.sort((a, b) {
-              final now = DateTime.now();
-              final aOverdue = a.dueDate != null && a.dueDate!.isBefore(now);
-              final bOverdue = b.dueDate != null && b.dueDate!.isBefore(now);
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: tasksWithUsers.length,
+                itemBuilder: (context, index) {
+                  final task = tasksWithUsers[index]['task'] as TaskModel;
+                  final assignee =
+                      tasksWithUsers[index]['assignee'] as UserModel?;
+                  final creator =
+                      tasksWithUsers[index]['creator'] as UserModel?;
 
-              if (aOverdue && !bOverdue) return -1;
-              if (!aOverdue && bOverdue) return 1;
-
-              if (a.dueDate == null && b.dueDate == null) return 0;
-              if (a.dueDate == null) return 1;
-              if (b.dueDate == null) return -1;
-
-              final dateComparison = a.dueDate!.compareTo(b.dueDate!);
-              if (dateComparison != 0) return dateComparison;
-
-              // If due dates are the same, sort by status
-              return a.status.index.compareTo(b.status.index);
-            });
-
-            return ListView.builder(
-              itemCount: filteredTasks.length,
-              itemBuilder: (context, index) {
-                final task = filteredTasks[index];
-                final assignee = _usersCache[task.assigneeId];
-                final isAssignee = task.assigneeId == currentUser?.uid;
-
-                return TaskItem(
-                  task: task,
-                  assignee: assignee,
-                  isManager: isManager,
-                  isAssignee: isAssignee,
-                  onTaskUpdated: _ontaskUpdated,
-                );
-              },
+                  return TaskItemCard(
+                    task: task,
+                    assignee: assignee,
+                    currentUser: currentUser,
+                    onEdit: () {
+                      // Only managers can edit tasks
+                      if (isManager) {
+                        context.go('/tasks/${task.taskId}/edit');
+                      }
+                    },
+                    onStatusChange: (newStatus) async {
+                      // Only assignees can change status
+                      if (currentUser?.uid == task.assigneeId) {
+                        final updatedTask = task.copyWith(status: newStatus);
+                        await _taskService.updateTask(updatedTask);
+                        _fetchTasks(); // Refresh tasks after update
+                      }
+                    },
+                    onViewDetails: () {
+                      _showTaskDetailsDialog(context, task, assignee, creator);
+                    },
+                  );
+                },
+              ),
             );
           }
         },
@@ -155,6 +152,55 @@ class _TasksScreenState extends State<TasksScreen> {
                 child: const Icon(Icons.add),
               )
               : null, // Hide FAB if not a manager
+    );
+  }
+
+  void _showTaskDetailsDialog(
+    BuildContext context,
+    TaskModel task,
+    UserModel? assignee,
+    UserModel? creator,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(task.title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Description: ${task.description}'),
+                const SizedBox(height: 8),
+                Text('Status: ${task.status.toString().split('.').last}'),
+                const SizedBox(height: 8),
+                Text(
+                  'Due Date: ${task.dueDate?.toLocal().toString().split(' ')[0] ?? 'N/A'}',
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Assignee: ${assignee?.fullName ?? AppStrings.unassigned}',
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Created By: ${creator?.fullName ?? AppStrings.unassigned}',
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Created At: ${task.createdAt?.toLocal().toString().split(' ')[0] ?? 'N/A'}',
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

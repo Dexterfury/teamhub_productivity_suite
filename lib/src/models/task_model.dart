@@ -84,4 +84,29 @@ class TaskModel {
     }
     return map;
   }
+
+  // Copy with method to create a new instance with some fields modified
+  TaskModel copyWith({
+    String? taskId,
+    String? title,
+    String? description,
+    DateTime? dueDate,
+    TaskStatus? status,
+    String? assigneeId,
+    String? projectId,
+    String? createdById,
+    DateTime? createdAt,
+  }) {
+    return TaskModel(
+      taskId: taskId ?? this.taskId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      dueDate: dueDate ?? this.dueDate,
+      status: status ?? this.status,
+      assigneeId: assigneeId ?? this.assigneeId,
+      projectId: projectId ?? this.projectId,
+      createdById: createdById ?? this.createdById,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }
