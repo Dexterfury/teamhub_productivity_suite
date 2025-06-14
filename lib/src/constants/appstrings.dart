@@ -6,7 +6,6 @@ class AppStrings {
   static const String fieldUserPhotoUrl = 'userPhotoUrl';
   static const String fieldIsFirstLogin = 'isFirstLogin';
   static const String fieldCreatedAt = 'createdAt';
-  static const String fieldCreatedBy = 'createdBy';
   static const String fieldCreatedById = 'createdById';
   static const String fieldRoles = 'roles';
   static const String fieldIsOnline = 'isOnline';

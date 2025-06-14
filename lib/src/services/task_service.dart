@@ -47,7 +47,10 @@ class TaskService {
         query = query.where(AppStrings.fieldAssigneeId, isEqualTo: assigneeId);
       }
       if (createdById != null && createdById.isNotEmpty) {
-        query = query.where(AppStrings.fieldCreatedBy, isEqualTo: createdById);
+        query = query.where(
+          AppStrings.fieldCreatedById,
+          isEqualTo: createdById,
+        );
       }
       if (status != null && status.isNotEmpty && status != 'All') {
         query = query.where(AppStrings.fieldStatus, isEqualTo: status);
