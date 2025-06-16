@@ -1,1 +1,44 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"teamhub-productivity-suit","appId":"1:418770956234:android:6ad1c58aa867553525a933","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"teamhub-productivity-suit","configurations":{"android":"1:418770956234:android:6ad1c58aa867553525a933","ios":"1:418770956234:ios:af8c675cae753a8a25a933"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "teamhub-productivity-suit",
+          "appId": "1:418770956234:android:6ad1c58aa867553525a933",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "teamhub-productivity-suit",
+          "configurations": {
+            "android": "1:418770956234:android:6ad1c58aa867553525a933",
+            "ios": "1:418770956234:ios:af8c675cae753a8a25a933"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "nam5",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}

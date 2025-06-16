@@ -1,0 +1,119 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+    // Check is user is authenticated
+    function isAuthenticated() {
+    return request.auth != null;
+    }
+    
+    // Has updatable field
+    function hasUpdatableField() {
+    return request.resource.data.fullName != resource.data.fullName ||
+    request.resource.data.userPhotoUrl != resource.data.userPhotoUrl ||
+    request.resource.data.phone != resource.data.phone ||
+    request.resource.data.department != resource.data.department ||
+    request.resource.data.location != resource.data.location ||
+    request.resource.data.jobTitle != resource.data.jobTitle;
+    }
+    
+    // Can read tasks
+    function canReadTask(task) {
+    return isAuthenticated() && task.createdById == request.auth.uid || task.assigneeId == request.auth.uid;
+    }
+    
+    // unchanged fields
+    function isUnchanged(key) {
+    return request.resource.data[key] == resource.data[key];
+    }
+    
+    // Check if is owner
+    function isOwner(userId) {
+    return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Check if is admin
+    function isAdmin() {
+    return isAuthenticated() &&
+    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roles.isAdmin == true;
+    }
+    
+    // Check if is manager
+    function isManager() {
+    return isAuthenticated() &&
+    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roles.isManager == true;
+    }
+    
+    // Check if user is a memer of the project
+    function isProjectMember(project) {
+    return project.memberIds.hasAny([request.auth.uid]);
+    }
+    
+    // Check if is creator of project
+    function isProjectCreator(project) {
+    return project.createdById == request.auth.uid;
+    }
+    
+    // Check Project active
+    function isActiveProject(project) {
+    return project.status == "active";
+    }
+    
+    // Users collection rules
+    match /users/{userId} {
+    // Read rules
+    allow read: if isOwner(userId) || isAdmin();
+    
+    // Create rules
+    allow create: if isOwner(userId) && 
+    request.resource.data.email is string &&
+    request.resource.data.fullName is string &&
+    request.resource.data.isFirstLogin == true;
+    
+    // Update rules
+    allow update: if isOwner(userId) || isAdmin(); 
+    // &&
+    //hasUpdatableField() &&
+    // isUnchanged("email") &&
+    // isUnchanged("createdAt");
+    }
+    
+    // Projects collection rules
+    match /projects/{projectId} {
+    // Read rules
+    allow get, list: if isAuthenticated() && resource.data != null && (isProjectMember(resource.data) || isAdmin());
+    
+    // Create rules
+    allow create: if isAdmin() || isManager();
+    
+    // Update rules
+    allow update, delete: if isProjectCreator(resource.data);
+    }
+    
+    match /tasks/{taskId} {
+    	// --- READ ---
+      // Allow read if:
+      // 1. The user is an admin or manager (Creater of the task).
+      // 2. The user is the assignee.
+      allow read: if isAdmin() || canReadTask(resource.data);
+      
+      // --- CREATE ---
+      // Allow create if:
+      // 1. The user is a manager (Only managers can create and asign tasks).
+      allow create: if isManager();
+      
+      // --- UPDATE ---
+      // Allow update if:
+      // 1. The user is a manager.
+      // 2. The user is the assignee.
+      allow update: if canReadTask(resource.data);
+      
+      // --- DELETE ---
+      // Allow delete if:
+      // 1. The user is a manager.
+      allow update: if isManager();
+    }
+    
+  }
+}
