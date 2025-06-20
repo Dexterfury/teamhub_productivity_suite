@@ -200,13 +200,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       // Add a drawer for mobile view
       drawer: screenWidth < 600 ? _buildDrawer(context) : null,
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'dashboard_fab',
-        onPressed: () {
-          context.go('/tasks/new');
+      floatingActionButton: Consumer<AuthenticationProvider>(
+        builder: (context, authProvider, child) {
+          final isManager = authProvider.appUser?.roles.isManager ?? false;
+          return isManager
+              ? FloatingActionButton(
+                heroTag: 'dashboard_fab',
+                onPressed: () {
+                  context.go('/tasks/new');
+                },
+                tooltip: 'Add Task',
+                child: const Icon(Icons.add),
+              )
+              : const SizedBox.shrink(); // Hide FAB if not manager
         },
-        tooltip: 'Add Task',
-        child: const Icon(Icons.add),
       ),
     );
   }

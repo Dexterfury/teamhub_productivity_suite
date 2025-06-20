@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,6 +29,9 @@ class AuthenticationProvider with ChangeNotifier {
       _user = firebaseUser;
       if (_user != null) {
         _appUser = await _userService.getUser(_user!.uid);
+        // Force refresh the token to ensure it's valid
+        await _authService.auth.currentUser?.getIdToken(true);
+        log('token refreshed for user: ${_user!.uid}');
       } else {
         _appUser = null;
       }

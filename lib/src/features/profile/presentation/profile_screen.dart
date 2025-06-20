@@ -236,6 +236,8 @@ class ProfileScreen extends StatelessWidget {
   // Action buttons for profile
   Widget _buildActionButtons(BuildContext context) {
     final authProvider = context.read<AuthenticationProvider>();
+    final isAdmin = authProvider.appUser?.roles.isAdmin ?? false;
+    final canManageUsers = authProvider.appUser?.roles.canManageUsers ?? false;
     // Get screen width for responsive layout
     final screenWidth = MediaQuery.of(context).size.width;
     final isTabletOrLarger = screenWidth >= 600;
@@ -294,17 +296,18 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12.0),
           // Admin Panel Button (Placeholder - show only for admins)
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                // For now, assume user is admin to show the button
-                context.push('/profile/manage-users');
-              },
-              icon: const Icon(Icons.admin_panel_settings_outlined),
-              label: const Text(AppStrings.manageUsersTitle),
+          if (isAdmin || canManageUsers)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // For now, assume user is admin to show the button
+                  context.push('/profile/manage-users');
+                },
+                icon: const Icon(Icons.admin_panel_settings_outlined),
+                label: const Text(AppStrings.manageUsersTitle),
+              ),
             ),
-          ),
           const SizedBox(height: 12.0),
           SizedBox(
             width: double.infinity,

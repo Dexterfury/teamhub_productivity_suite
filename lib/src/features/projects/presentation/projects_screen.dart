@@ -152,8 +152,10 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
       ),
       floatingActionButton: Consumer<AuthenticationProvider>(
         builder: (context, authProvider, child) {
-          final isAdmin = authProvider.appUser?.roles.isAdmin ?? false;
-          return isAdmin
+          final isManager = authProvider.appUser?.roles.isManager ?? false;
+          final canManageSites =
+              authProvider.appUser?.roles.canManageSites ?? false;
+          return isManager || canManageSites
               ? FloatingActionButton.extended(
                 heroTag: 'projectsListFAB', // Add unique heroTag
                 onPressed: () => context.go('/projects/new'),
@@ -161,7 +163,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
                 label: const Text('New Project'),
                 tooltip: 'Create new project',
               )
-              : const SizedBox.shrink(); // Hide FAB if not admin
+              : const SizedBox.shrink(); // Hide FAB if not manager
         },
       ),
     );
